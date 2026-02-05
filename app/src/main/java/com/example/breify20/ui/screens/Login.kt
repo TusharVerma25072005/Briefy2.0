@@ -1,15 +1,13 @@
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.Button
@@ -18,7 +16,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.StableMarker
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -26,22 +24,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-
-
-
-@Composable
-fun BlankAvatar() {
-    Box(
-        modifier = Modifier
-            .size(100.dp)
-            .clip(CircleShape)
-            .background(MaterialTheme.colorScheme.onPrimary)
-    )
-}
+import com.example.breify20.R
 
 @Composable
 fun LoginScreen(
@@ -52,12 +42,12 @@ fun LoginScreen(
 
     Surface(
         modifier = modifier
-            .fillMaxSize()
-            .padding(24.dp),
+            .fillMaxSize(),
         color = MaterialTheme.colorScheme.background
     ) {
         Box(
-            modifier = Modifier.fillMaxSize(),
+            modifier = modifier.fillMaxSize()
+                .padding(16.dp),
             contentAlignment = Alignment.Center
         ) {
             Column(
@@ -65,8 +55,14 @@ fun LoginScreen(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                BlankAvatar()
-                Spacer(modifier = Modifier.height(24.dp))
+                Image(
+                    painter = painterResource(R.drawable.briefy),
+                    contentDescription = "Logo",
+                    modifier = modifier
+                        .height(200.dp),
+                    contentScale = ContentScale.FillWidth,
+                    alignment = Alignment.TopCenter
+                )
 
                 Text(
                     text = "Your Intelligent Email Assistant\nSummarize, prioritize, and focus",
@@ -74,31 +70,26 @@ fun LoginScreen(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center,
                     fontWeight = FontWeight.Bold,
-                    modifier = Modifier
+                    modifier = modifier
                         .fillMaxWidth()
                         .padding(bottom = 32.dp)
                 )
-
 
                 InputField(
                     value = email,
                     onValueChange = { email = it },
                     placeholder = "Email"
                 )
-
                 Spacer(modifier = Modifier.height(12.dp))
-
                 InputField(
                     value = password,
                     onValueChange = { password = it },
                     placeholder = "Password"
                 )
-
                 Spacer(modifier = Modifier.height(24.dp))
-
                 Button(
                     onClick = { },
-                    modifier = Modifier
+                    modifier = modifier
                         .fillMaxWidth()
                         .height(50.dp)
                         ,
@@ -113,7 +104,7 @@ fun LoginScreen(
 
                 Spacer(modifier = Modifier.height(12.dp))
 
-                TextButton(onClick = {  }) {
+                TextButton( onClick = {} ) {
                     Text(
                         "Don't have an account? Sign up",
                         style = MaterialTheme.typography.bodyMedium,
@@ -125,39 +116,13 @@ fun LoginScreen(
     }
 }
 
-@Composable
-fun InputField(
-    value: String,
-    onValueChange: (String) -> Unit,
-    placeholder: String
-) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(50.dp)
-            .background(
-                color = MaterialTheme.colorScheme.surfaceVariant,
-                shape = RoundedCornerShape(12.dp)
-            )
-            .padding(horizontal = 16.dp),
-        contentAlignment = Alignment.CenterStart
-    ) {
-        if (value.isEmpty()) {
-            Text(
-                text = placeholder,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                style = MaterialTheme.typography.bodyMedium
-            )
-        }
 
-        BasicTextField(
-            value = value,
-            onValueChange = onValueChange,
-            singleLine = true,
-            modifier = Modifier.fillMaxWidth()
-        )
-    }
-}
+
+
+
+
+
+
 
 @Preview(showBackground = true)
 @Composable

@@ -1,5 +1,4 @@
 package com.example.breify20.ui.screens
-
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,9 +14,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -27,6 +24,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -38,11 +36,7 @@ var sample = EmailItem(
     senderEmail = "sender@gmail.com",
     subject = "Subject line ",
     summary = "This is one liner AI-generated summary for email .",
-    body = "This is the full email body content for email . Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n" +
-            "\n" +
-            "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.\n" +
-            "\n" +
-            "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\n",
+    body = "This is the full email body content for email . Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n" +  "\n" + "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.\n" +  "\n" + "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\n",
     isRead = true,
     priority = EmailPriority.entries.random(),
     time = "10:30 AM",
@@ -51,18 +45,13 @@ var sample = EmailItem(
 
 
 @Composable
-fun EmailScreen(email: EmailItem = sample) {
-
+fun EmailScreen(modifier : Modifier = Modifier , email: EmailItem = sample , ) {
     Column(
-        modifier = Modifier
-            .fillMaxSize()
+        modifier = modifier.fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
     ) {
-
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
+            modifier = modifier.fillMaxWidth().padding(16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -77,7 +66,7 @@ fun EmailScreen(email: EmailItem = sample) {
         Spacer(modifier = Modifier.height(24.dp))
 
         Text(
-            text = "Q4 Roadmap Review & Strategy",
+            text = email.subject,
             fontSize = 22.sp,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onBackground,
@@ -87,7 +76,8 @@ fun EmailScreen(email: EmailItem = sample) {
         Spacer(modifier = Modifier.height(16.dp))
 
         Row(
-            modifier = Modifier.padding(horizontal = 16.dp),
+            modifier = Modifier.padding(horizontal = 16.dp)
+                .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Box(
@@ -105,19 +95,42 @@ fun EmailScreen(email: EmailItem = sample) {
             }
 
             Spacer(modifier = Modifier.width(12.dp))
+            Row (
+                modifier = modifier.fillMaxWidth()
+            ){
 
-            Column {
-                Text(
-                    text = "Sarah Chen",
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onBackground
-                )
-                Text(
-                    text = "Product Manager · 10:42 AM",
-                    fontSize = 12.sp,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
+            Column (
+                modifier = modifier
+            ){
+
+                    Text(
+                        text = email.senderName,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                    Text(
+                        text = email.senderEmail,
+                        fontSize = 12.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+
             }
+        Column(
+            modifier = modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.End
+
+
+        ) {
+            Text(
+                text = email.time,
+
+            )
+        }
+            }
+
         }
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -156,7 +169,7 @@ fun EmailScreen(email: EmailItem = sample) {
             fontSize = 14.sp,
             lineHeight = 20.sp,
             color = MaterialTheme.colorScheme.onBackground,
-            modifier = Modifier.padding(horizontal = 16.dp)
+            modifier = modifier.padding(horizontal = 16.dp)
         )
     }
 }

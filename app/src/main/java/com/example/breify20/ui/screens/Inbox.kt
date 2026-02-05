@@ -135,7 +135,7 @@ fun InboxScreen(modifier: Modifier = Modifier ,
                 .background(MaterialTheme.colorScheme.background)
         ) {
             items(emailList) { email ->
-                EmailCard(email = email)
+                EmailCard(email = email , navController = navController )
             }
         }
     }

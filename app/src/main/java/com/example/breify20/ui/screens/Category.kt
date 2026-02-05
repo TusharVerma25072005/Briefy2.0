@@ -109,7 +109,7 @@ fun CategoryScreen(
                 .background(MaterialTheme.colorScheme.background)
         ) {
             items(emailList) { email ->
-                EmailCard(email = email)
+                EmailCard(email = email , navController = navController)
             }
         }
     }

@@ -1,5 +1,6 @@
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -22,11 +23,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.breify20.R
 import com.example.breify20.ui.screens.BlankAvatar
 
 @Composable
-fun Topbar(modifier : Modifier = Modifier) {
+fun Topbar(modifier : Modifier = Modifier , navController: NavController) {
 
     var searchQuery by remember { mutableStateOf("") }
 
@@ -74,12 +77,23 @@ fun Topbar(modifier : Modifier = Modifier) {
                 )
             }
             Spacer(modifier = Modifier.width(12.dp))
-            BlankAvatar()
+            Row(
+                modifier = modifier.clickable(
+                    onClick = {
+                        navController.navigate("profile")
+                    }
+                )
+            ) {
+
+                BlankAvatar()
+
+            }
         }
     }
 }
 @Composable
 @Preview(showBackground = true)
 fun TopBarPreview(){
-    Topbar()
+    var navController = rememberNavController()
+    Topbar( navController = navController)
 }

@@ -23,6 +23,7 @@ fun BottomBar(modifier : Modifier = Modifier , selectedScreen :Int = 0 , navCont
         NavigationBarItem(
             selected = selectedScreen == 0,
             onClick = {
+                navController.clearBackStack( "category")
                 navController.navigate("inbox")
             },
             icon = {
@@ -34,6 +35,7 @@ fun BottomBar(modifier : Modifier = Modifier , selectedScreen :Int = 0 , navCont
         NavigationBarItem(
             selected = selectedScreen == 1,
             onClick = {
+                navController.clearBackStack( "inbox")
                 navController.navigate("category")
             },
             icon = {

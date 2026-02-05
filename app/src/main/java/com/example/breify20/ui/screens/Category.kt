@@ -53,13 +53,24 @@ fun CategoryScreen(
     val listState = rememberLazyListState()
     var showTopBar by remember { mutableStateOf(true) }
     var selectedCategory by remember { mutableStateOf(EmailPriority.HIGH) }
+
     LaunchedEffect(listState) {
-        var lastScrollOffset = 0
-        snapshotFlow { listState.firstVisibleItemScrollOffset }
-            .collect { offset ->
-                showTopBar = offset < lastScrollOffset
-                lastScrollOffset = offset
-            }
+        var lastIndex = 0
+        var lastOffset = 0
+
+        snapshotFlow {
+            listState.firstVisibleItemIndex to listState.firstVisibleItemScrollOffset
+        }.collect { (index, offset) ->
+
+            val isScrollingUp =
+                index < lastIndex ||
+                        (index == lastIndex && offset < lastOffset)
+
+            showTopBar = isScrollingUp || index == 0
+
+            lastIndex = index
+            lastOffset = offset
+        }
     }
 
     Scaffold(

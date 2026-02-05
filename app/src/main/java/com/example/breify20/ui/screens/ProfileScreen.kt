@@ -83,7 +83,9 @@ fun ProfileScreen(modifier: Modifier = Modifier , navController: NavController) 
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Start
             ) {
-                IconButton(onClick = {}) {
+                IconButton(onClick = {
+                    navController.popBackStack()
+                }) {
                     Icon(Icons.Default.ArrowBack, contentDescription = "Back")
 
                 }

@@ -23,8 +23,11 @@ fun BottomBar(modifier : Modifier = Modifier , selectedScreen :Int = 0 , navCont
         NavigationBarItem(
             selected = selectedScreen == 0,
             onClick = {
-                navController.clearBackStack( "category")
-                navController.navigate("inbox")
+                navController.navigate("inbox"){
+                    popUpTo("inbox"){
+                        inclusive = true
+                    }
+                }
             },
             icon = {
                 Icon(Icons.Default.Email, contentDescription = "Inbox")

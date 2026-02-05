@@ -101,8 +101,11 @@ fun ProfileScreen(modifier: Modifier = Modifier , navController: NavController) 
 
             Button(
                 onClick = {
-                    navController.clearBackStack("login")
-                    navController.navigate("login")
+                    navController.navigate("login"){
+                        popUpTo("login"){
+                            inclusive = true
+                        }
+                    }
                 },
                 shape = RoundedCornerShape(20.dp)
             ) {

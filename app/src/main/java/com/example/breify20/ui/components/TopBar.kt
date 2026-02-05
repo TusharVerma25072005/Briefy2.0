@@ -80,7 +80,11 @@ fun Topbar(modifier : Modifier = Modifier , navController: NavController) {
             Row(
                 modifier = modifier.clickable(
                     onClick = {
-                        navController.navigate("profile")
+                        navController.navigate("profile"){
+                            popUpTo("inbox") {
+                                inclusive = true
+                            }
+                        }
                     }
                 )
             ) {

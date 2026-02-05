@@ -1,5 +1,6 @@
 package com.example.breify20.ui.screens
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -60,7 +61,11 @@ fun EmailScreen(modifier : Modifier = Modifier , email: EmailItem = sample , nav
             Icon(
                 Icons.Default.ArrowBack,
                 contentDescription = "Back",
-                tint = MaterialTheme.colorScheme.onBackground
+                tint = MaterialTheme.colorScheme.onBackground,
+                modifier = Modifier.clickable {
+                    navController.popBackStack()
+                }
+
             )
 
         }

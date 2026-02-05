@@ -85,7 +85,7 @@ fun CategoryScreen(
                 enter = expandVertically(),
                 exit = shrinkVertically()
             ) {
-                BottomBar(modifier = modifier , selectedScreen = 1)
+                BottomBar(modifier = modifier , selectedScreen = 1 , navController = navController)
             }
         }
     ) { padding ->

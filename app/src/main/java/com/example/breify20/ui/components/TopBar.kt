@@ -84,7 +84,6 @@ fun Topbar(modifier : Modifier = Modifier , navController: NavController) {
                     }
                 )
             ) {
-
                 BlankAvatar()
 
             }

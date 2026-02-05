@@ -120,14 +120,6 @@ fun LoginScreen(
     }
 }
 
-
-
-
-
-
-
-
-
 @Preview(showBackground = true)
 @Composable
 fun LoginScreenPreview(){

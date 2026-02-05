@@ -45,7 +45,7 @@ fun GreetingPreview() {
 @Composable
 fun AppNavHost(){
     var navController  = rememberNavController()
-    var startDest = "inbox"
+    var startDest = "login"
     NavHost(
         navController = navController,
         startDestination = startDest

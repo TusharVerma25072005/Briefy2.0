@@ -113,7 +113,7 @@ fun InboxScreen(modifier: Modifier = Modifier ,
                 enter = expandVertically(),
                 exit = shrinkVertically()
             ) {
-                Topbar(modifier = modifier)
+                Topbar(modifier = modifier , navController = navController)
             }
         },
         bottomBar = {

@@ -43,10 +43,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.breify20.R
 
 @Composable
-fun ProfileScreen(modifier: Modifier = Modifier) {
+fun ProfileScreen(modifier: Modifier = Modifier , navController: NavController) {
 
     var name by remember { mutableStateOf("John Doe") }
     var email by remember { mutableStateOf("qwertyiu@gmail.com") }
@@ -139,5 +141,6 @@ fun BlankAvatarLarge() {
 @Composable
 @Preview(showBackground = true)
 fun ProfileScreenPreview(){
-    ProfileScreen()
+    var navController = rememberNavController()
+    ProfileScreen(navController = navController)
 }

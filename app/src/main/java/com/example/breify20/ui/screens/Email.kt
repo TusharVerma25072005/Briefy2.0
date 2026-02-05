@@ -29,6 +29,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 
 var sample = EmailItem(
     id = "0",
@@ -45,7 +47,7 @@ var sample = EmailItem(
 
 
 @Composable
-fun EmailScreen(modifier : Modifier = Modifier , email: EmailItem = sample , ) {
+fun EmailScreen(modifier : Modifier = Modifier , email: EmailItem = sample , navController : NavController ) {
     Column(
         modifier = modifier.fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
@@ -177,7 +179,8 @@ fun EmailScreen(modifier : Modifier = Modifier , email: EmailItem = sample , ) {
 @Preview(showBackground = true)
 @Composable
 fun EmailScreenPreview() {
-    EmailScreen()
+    var navController = rememberNavController()
+    EmailScreen(navController = navController)
 }
 
 

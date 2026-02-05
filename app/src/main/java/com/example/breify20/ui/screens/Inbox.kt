@@ -28,6 +28,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.breify20.ui.components.BottomBar
 import com.example.breify20.ui.components.EmailCard
 
@@ -76,11 +78,12 @@ fun BlankAvatar() {
 
 
 @Composable
-fun InboxScreen(modifier: Modifier = Modifier) {
+fun InboxScreen(modifier: Modifier = Modifier ,
+                navController: NavController
+) {
 
     val listState = rememberLazyListState()
     var showTopBar by remember { mutableStateOf(true) }
-    var showBottomBar by remember { mutableStateOf(true) }
 
     LaunchedEffect(listState) {
         var lastScrollOffset = 0
@@ -109,7 +112,7 @@ fun InboxScreen(modifier: Modifier = Modifier) {
                 enter = expandVertically(),
                 exit = shrinkVertically()
             ) {
-                BottomBar(modifier = modifier)
+                BottomBar(modifier = modifier, navController = navController)
             }
         }
     ) { padding ->
@@ -131,7 +134,8 @@ fun InboxScreen(modifier: Modifier = Modifier) {
 @Preview(showBackground = true)
 @Composable
 fun InboxScreenPreview(){
-    InboxScreen()
+    var navController = rememberNavController()
+    InboxScreen(navController = navController)
 }
 
 

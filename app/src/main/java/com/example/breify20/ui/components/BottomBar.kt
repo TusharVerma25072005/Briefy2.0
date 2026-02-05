@@ -10,17 +10,21 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 
 
 @Composable
-fun BottomBar(modifier : Modifier = Modifier , selectedScreen :Int = 0){
+fun BottomBar(modifier : Modifier = Modifier , selectedScreen :Int = 0 , navController : NavController){
     NavigationBar(
         containerColor = MaterialTheme.colorScheme.surface
     ) {
 
         NavigationBarItem(
             selected = selectedScreen == 0,
-            onClick = {  },
+            onClick = {
+                navController.navigate("inbox")
+            },
             icon = {
                 Icon(Icons.Default.Email, contentDescription = "Inbox")
             },
@@ -29,7 +33,9 @@ fun BottomBar(modifier : Modifier = Modifier , selectedScreen :Int = 0){
 
         NavigationBarItem(
             selected = selectedScreen == 1,
-            onClick = {  },
+            onClick = {
+                navController.navigate("category")
+            },
             icon = {
                 Icon(Icons.Default.Menu, contentDescription = "Category")
             },
@@ -41,5 +47,6 @@ fun BottomBar(modifier : Modifier = Modifier , selectedScreen :Int = 0){
 @Composable
 @Preview(showBackground = true)
 fun BottomBarPreview(){
-    BottomBar()
+    var navController = rememberNavController()
+    BottomBar(navController = navController)
 }

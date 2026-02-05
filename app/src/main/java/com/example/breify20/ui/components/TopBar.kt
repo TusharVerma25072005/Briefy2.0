@@ -74,7 +74,7 @@ fun Topbar(modifier : Modifier = Modifier) {
                 )
             }
             Spacer(modifier = Modifier.width(12.dp))
-//            BlankAvatar()
+            BlankAvatar()
         }
     }
 }

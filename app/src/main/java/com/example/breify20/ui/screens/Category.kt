@@ -67,7 +67,6 @@ fun CategoryScreen(modifier: Modifier = Modifier) {
                 exit = shrinkVertically()
             ) {
                 Column {
-
                     Topbar(modifier = modifier)
                     CategorySelectBox(selected = selectedCategory, onSelect = {
                         selectedCategory = it

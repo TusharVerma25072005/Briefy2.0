@@ -51,7 +51,7 @@ fun AppNavHost(){
         startDestination = startDest
     ){
         composable(
-            route = "login"
+            route = "inbox"
         ){
             InboxScreen(navController = navController)
         }

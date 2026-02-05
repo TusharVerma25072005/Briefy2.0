@@ -91,11 +91,12 @@ fun LoginScreen(
                 )
                 Spacer(modifier = Modifier.height(24.dp))
                 Button(
-                    onClick = { },
+                    onClick = {
+                        navController.navigate("inbox")
+                    },
                     modifier = modifier
                         .fillMaxWidth()
-                        .height(50.dp)
-                        ,
+                        .height(50.dp),
                     shape = RoundedCornerShape(12.dp)
                 ) {
                     Text(

@@ -53,6 +53,7 @@ fun EmailScreen(modifier : Modifier = Modifier , email: EmailItem = sample , nav
         modifier = modifier.fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
     ) {
+        Spacer(modifier = modifier.height(20.dp))
         Row(
             modifier = modifier.fillMaxWidth().padding(16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,

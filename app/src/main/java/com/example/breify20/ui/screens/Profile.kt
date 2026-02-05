@@ -100,7 +100,10 @@ fun ProfileScreen(modifier: Modifier = Modifier , navController: NavController) 
             Spacer(modifier = Modifier.height(32.dp))
 
             Button(
-                onClick = {},
+                onClick = {
+                    navController.clearBackStack("login")
+                    navController.navigate("login")
+                },
                 shape = RoundedCornerShape(20.dp)
             ) {
                 Text("SIGN OUT")

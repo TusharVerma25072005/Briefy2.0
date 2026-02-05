@@ -17,7 +17,7 @@ import androidx.navigation.compose.rememberNavController
 @Composable
 fun BottomBar(modifier : Modifier = Modifier , selectedScreen :Int = 0 , navController : NavController){
     NavigationBar(
-        containerColor = MaterialTheme.colorScheme.surface
+        containerColor = MaterialTheme.colorScheme.surfaceVariant
     ) {
 
         NavigationBarItem(

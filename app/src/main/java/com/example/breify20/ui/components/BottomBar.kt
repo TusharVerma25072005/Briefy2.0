@@ -13,13 +13,13 @@ import androidx.compose.ui.tooling.preview.Preview
 
 
 @Composable
-fun BottomBar(modifier : Modifier = Modifier){
+fun BottomBar(modifier : Modifier = Modifier , selectedScreen :Int = 0){
     NavigationBar(
         containerColor = MaterialTheme.colorScheme.surface
     ) {
 
         NavigationBarItem(
-            selected = true,
+            selected = selectedScreen == 0,
             onClick = {  },
             icon = {
                 Icon(Icons.Default.Email, contentDescription = "Inbox")
@@ -28,7 +28,7 @@ fun BottomBar(modifier : Modifier = Modifier){
         )
 
         NavigationBarItem(
-            selected = false,
+            selected = selectedScreen == 1,
             onClick = {  },
             icon = {
                 Icon(Icons.Default.Menu, contentDescription = "Category")

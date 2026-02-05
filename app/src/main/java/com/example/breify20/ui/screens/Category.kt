@@ -1,0 +1,109 @@
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import com.example.breify20.ui.components.BottomBar
+import com.example.breify20.ui.components.CategorySelectBox
+import com.example.breify20.ui.components.EmailCard
+import com.example.breify20.ui.screens.EmailPriority
+import com.example.breify20.ui.screens.emailList
+
+@Composable
+fun BlankAvatar() {
+    Box(
+        modifier = Modifier
+            .size(48.dp)
+            .clip(CircleShape)
+            .background(MaterialTheme.colorScheme.onPrimary)
+    )
+}
+
+
+@Composable
+fun CategoryScreen(modifier: Modifier = Modifier) {
+
+    val listState = rememberLazyListState()
+    var showTopBar by remember { mutableStateOf(true) }
+    var selectedCategory by remember { mutableStateOf(EmailPriority.HIGH) }
+    LaunchedEffect(listState) {
+        var lastScrollOffset = 0
+        snapshotFlow { listState.firstVisibleItemScrollOffset }
+            .collect { offset ->
+                showTopBar = offset < lastScrollOffset
+                lastScrollOffset = offset
+            }
+    }
+
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        contentWindowInsets = WindowInsets(0),
+        topBar = {
+            AnimatedVisibility(
+                visible = showTopBar,
+                enter = expandVertically(),
+                exit = shrinkVertically()
+            ) {
+                Column {
+
+                    Topbar(modifier = modifier)
+                    CategorySelectBox(selected = selectedCategory, onSelect = {
+                        selectedCategory = it
+                    })
+                }
+            }
+        },
+        bottomBar = {
+            AnimatedVisibility(
+                visible = showTopBar,
+                enter = expandVertically(),
+                exit = shrinkVertically()
+            ) {
+                BottomBar(modifier = modifier , selectedScreen = 1)
+            }
+        }
+    ) { padding ->
+
+        LazyColumn(
+            state = listState,
+            modifier = modifier
+                .padding(padding)
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
+        ) {
+            items(emailList) { email ->
+                EmailCard(email = email)
+            }
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun CategoryPreview(){
+    CategoryScreen()
+}
+
+

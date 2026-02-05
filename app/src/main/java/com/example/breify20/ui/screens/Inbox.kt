@@ -28,6 +28,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.breify20.ui.components.BottomBar
 import com.example.breify20.ui.components.EmailCard
 
 data class EmailItem(
@@ -79,6 +80,7 @@ fun InboxScreen(modifier: Modifier = Modifier) {
 
     val listState = rememberLazyListState()
     var showTopBar by remember { mutableStateOf(true) }
+    var showBottomBar by remember { mutableStateOf(true) }
 
     LaunchedEffect(listState) {
         var lastScrollOffset = 0
@@ -98,7 +100,16 @@ fun InboxScreen(modifier: Modifier = Modifier) {
                 enter = expandVertically(),
                 exit = shrinkVertically()
             ) {
-                Topbar()
+                Topbar(modifier = modifier)
+            }
+        },
+        bottomBar = {
+            AnimatedVisibility(
+                visible = showTopBar,
+                enter = expandVertically(),
+                exit = shrinkVertically()
+            ) {
+                BottomBar(modifier = modifier)
             }
         }
     ) { padding ->

@@ -22,9 +22,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.breify20.ui.components.BottomBar
@@ -34,24 +32,13 @@ import com.example.breify20.ui.screens.EmailPriority
 import com.example.breify20.ui.screens.emailList
 
 @Composable
-fun BlankAvatar() {
-    Box(
-        modifier = Modifier
-            .size(48.dp)
-            .clip(CircleShape)
-            .background(MaterialTheme.colorScheme.onPrimary)
-    )
-}
-
-
-@Composable
 fun CategoryScreen(
     navController: NavController ,
     modifier: Modifier = Modifier
 ) {
 
     val listState = rememberLazyListState()
-    var showTopBar by remember { mutableStateOf(true) }
+    var showBars by remember { mutableStateOf(true) }
     var selectedCategory by remember { mutableStateOf(EmailPriority.HIGH) }
 
     LaunchedEffect(listState) {
@@ -66,7 +53,7 @@ fun CategoryScreen(
                 index < lastIndex ||
                         (index == lastIndex && offset < lastOffset)
 
-            showTopBar = isScrollingUp || index == 0
+            showBars = isScrollingUp || index == 0
 
             lastIndex = index
             lastOffset = offset
@@ -78,7 +65,7 @@ fun CategoryScreen(
         contentWindowInsets = WindowInsets(0),
         topBar = {
             AnimatedVisibility(
-                visible = showTopBar,
+                visible = showBars,
                 enter = expandVertically(),
                 exit = shrinkVertically()
             ) {
@@ -92,7 +79,7 @@ fun CategoryScreen(
         },
         bottomBar = {
             AnimatedVisibility(
-                visible = showTopBar,
+                visible = showBars,
                 enter = expandVertically(),
                 exit = shrinkVertically()
             ) {

@@ -27,7 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.breify20.R
-import com.example.breify20.ui.screens.BlankAvatar
+import com.example.breify20.ui.components.Avatar
 
 @Composable
 fun Topbar(modifier : Modifier = Modifier , navController: NavController) {
@@ -83,8 +83,9 @@ fun Topbar(modifier : Modifier = Modifier , navController: NavController) {
                         navController.navigate("profile")
                     }
                 )
+
             ) {
-                BlankAvatar()
+                Avatar()
 
             }
         }

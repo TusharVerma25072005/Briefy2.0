@@ -1,3 +1,7 @@
+import android.content.Intent
+import android.net.Uri
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -15,6 +19,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -22,22 +27,50 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat.startActivity
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.breify20.R
+import androidx.core.net.toUri
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.breify20.ui.viewModel.AuthViewModel
+import com.example.breify20.worker.WorkManagerHelper
 
 @Composable
 fun LoginScreen(
     navController: NavController,
     modifier: Modifier = Modifier,
-) {
-    var email by remember { mutableStateOf("") }
+    authViewModel : AuthViewModel,
+    mail :String? = "")
+{
+
+    var email by remember { mutableStateOf(mail ?: "") }
     var password by remember { mutableStateOf("") }
+    val context = LocalContext.current
+    val loginSuccess = authViewModel.loginSuccess.value
+    val loginError = authViewModel.loginError.value
+
+    LaunchedEffect(loginError) {
+        if(loginError.isNotEmpty()){
+            Toast.makeText(context, loginError, Toast.LENGTH_LONG).show()
+        }
+    }
+    LaunchedEffect(loginSuccess) {
+        if (loginSuccess) {
+            WorkManagerHelper.restartEmailSync(context)
+            Log.d("LOGIN ", "SUCCESS");
+            navController.navigate("inbox") {
+                popUpTo("login") { inclusive = true }
+            }
+        }
+    }
+
 
     Surface(
         modifier = modifier
@@ -88,7 +121,13 @@ fun LoginScreen(
                 Spacer(modifier = Modifier.height(24.dp))
                 Button(
                     onClick = {
-                        navController.navigate("inbox")
+                        if(email.isEmpty() || password.isEmpty()){
+                            Toast.makeText(context, "Please enter email and password", Toast.LENGTH_SHORT).show()
+                        }
+                        else{
+                            authViewModel.LoginUser(email, password, context)
+                        }
+
                     },
                     modifier = modifier
                         .fillMaxWidth()
@@ -104,7 +143,13 @@ fun LoginScreen(
 
                 Spacer(modifier = Modifier.height(12.dp))
 
-                TextButton( onClick = {} ) {
+                TextButton( onClick = {
+                    val intent = Intent(
+                        Intent.ACTION_VIEW,
+                        "https://briefy2-0-backend.onrender.com/signup".toUri()
+                    )
+                    context.startActivity(intent)
+                } ) {
                     Text(
                         "Don't have an account? Sign up",
                         style = MaterialTheme.typography.bodyMedium,
@@ -116,10 +161,4 @@ fun LoginScreen(
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun LoginScreenPreview(){
-    var navController = rememberNavController()
-    LoginScreen(navController = navController)
-}
 

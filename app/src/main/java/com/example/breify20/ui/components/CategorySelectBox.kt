@@ -10,12 +10,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.breify20.model.email.Category
 import com.example.breify20.ui.screens.EmailPriority
 
 @Composable
 fun CategorySelectBox(
-    selected: EmailPriority,
-    onSelect: (EmailPriority) -> Unit,
+    selected: Category,
+    onSelect: (Category) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -24,12 +25,12 @@ fun CategorySelectBox(
             .padding(8.dp),
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
-        EmailPriority.entries.forEach { priority ->
+        Category.entries.forEach { category ->
             FilterChip(
-                selected = selected == priority,
-                onClick = { onSelect(priority) },
+                selected = selected == category,
+                onClick = { onSelect(category) },
                 label = {
-                    Text(priority.name)
+                    Text(category.name)
                 }
             )
         }
@@ -39,7 +40,7 @@ fun CategorySelectBox(
 @Preview(showBackground = true)
 fun CategorySelectBoxPreview(){
     CategorySelectBox(
-        selected = EmailPriority.HIGH,
+        selected = Category.WORK,
         onSelect = {}
     )
 

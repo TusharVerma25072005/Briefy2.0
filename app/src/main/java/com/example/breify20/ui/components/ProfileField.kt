@@ -18,7 +18,6 @@ fun ProfileField(label: String, value: String) {
             .padding(vertical = 8.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
         Text(
             text = value,
             style = MaterialTheme.typography.bodyLarge,

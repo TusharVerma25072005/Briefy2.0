@@ -1,6 +1,7 @@
 package com.example.breify20.ui.screens
 
 import ProfileField
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -30,18 +31,23 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.breify20.data.SecurePrefs
+import com.example.breify20.ui.components.Avatar
+import com.example.breify20.ui.viewModel.AuthViewModel
+import com.example.breify20.ui.viewModel.EmailViewModel
 
 @Composable
-fun ProfileScreen(modifier: Modifier = Modifier , navController: NavController) {
-
-    var name by remember { mutableStateOf("John Doe") }
-    var email by remember { mutableStateOf("qwertyiu@gmail.com") }
-
+fun ProfileScreen(modifier: Modifier = Modifier , navController: NavController , viewModel : AuthViewModel? = null , emailViewModel : EmailViewModel? = null) {
+    val prefs = SecurePrefs.getPrefs(context = LocalContext.current)
+    var name by remember { mutableStateOf(prefs.getString("name", "")) }
+    var email by remember { mutableStateOf(prefs.getString("email","")) }
+    val context  = LocalContext.current
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -72,37 +78,43 @@ fun ProfileScreen(modifier: Modifier = Modifier , navController: NavController) 
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Start
             ) {
-                IconButton(onClick = {
-                    navController.popBackStack()
-                }) {
-                    Icon(Icons.Default.ArrowBack, contentDescription = "Back")
-
+                IconButton(
+                    onClick = { navController.popBackStack() }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.ArrowBack,
+                        contentDescription = "Back"
+                    )
                 }
             }
 
             Spacer(modifier = Modifier.height(40.dp))
 
-            BlankAvatarLarge()
+            Avatar(size = true)
 
             Spacer(modifier = Modifier.height(12.dp))
 
             Text(
-                text = name,
+                text = name?:"",
                 fontWeight = FontWeight.Bold,
                 style = MaterialTheme.typography.titleLarge
             )
 
             Spacer(modifier = Modifier.height(28.dp))
 
-            ProfileField(label = "Name", value = "Android Tutorials")
-            ProfileField(label = "Email", value = email)
-
+            ProfileField(label = "Name", value = name?:"")
+            ProfileField(label = "Email", value = email?:"")
             Spacer(modifier = Modifier.height(32.dp))
 
             Button(
                 onClick = {
-                    navController.navigate("login"){
-                        popUpTo("login"){
+                    Log.d("PROFILE" , "Logging out")
+                    Log.d("viewModel" , viewModel.toString())
+                    Log.d("emailViewModel" , emailViewModel.toString())
+                    viewModel?.logoutUser(context)
+                    emailViewModel?.deleteAllMails()
+                    navController.navigate("login") {
+                        popUpTo("login") {
                             inclusive = true
                         }
                     }
@@ -114,27 +126,6 @@ fun ProfileScreen(modifier: Modifier = Modifier , navController: NavController) 
         }
     }
 }
-
-
-@Composable
-fun BlankAvatarLarge() {
-    Box(
-        modifier = Modifier
-            .size(120.dp)
-            .clip(CircleShape)
-            .background(MaterialTheme.colorScheme.surface),
-        contentAlignment = Alignment.Center
-    ) {
-        Icon(
-            imageVector = Icons.Default.Person,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.size(64.dp)
-        )
-    }
-}
-
-
 
 @Composable
 @Preview(showBackground = true)

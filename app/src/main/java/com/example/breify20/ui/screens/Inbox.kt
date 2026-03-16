@@ -1,19 +1,15 @@
 package com.example.breify20.ui.screens
 import Topbar
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -24,64 +20,46 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import androidx.paging.compose.collectAsLazyPagingItems
+import com.example.breify20.data.SecurePrefs
 import com.example.breify20.ui.components.BottomBar
 import com.example.breify20.ui.components.EmailCard
+import com.example.breify20.ui.viewModel.EmailViewModel
 
-data class EmailItem(
-    val id: String,
-    val senderName: String,
-    val senderEmail: String,
-    val subject: String,
-    val summary: String,
-    val detailedSummary : String,
-    val priority: EmailPriority,
-    val time: String,
-    val isRead: Boolean,
-    val body: String
-)
 enum class EmailPriority {
     HIGH,
     MEDIUM,
     LOW
 }
-val emailList = List(20) { index ->
-    EmailItem(
-        id = index.toString(),
-        senderName = "Tushar Verma",
-        senderEmail = "Tushar$index@gmail.com",
-        subject = "Adhar Card Verification",
-        summary = "This is one liner AI-generated summary for email $index.",
-        body = "This is the full email body content for email $index.",
-        isRead = index % 2 == 0,
-        priority = EmailPriority.entries.random(),
-        time = "10:30 AM",
-        detailedSummary = "This is a detailed AI-generated summary for email $index."
-
-    )
-}
-
-@Composable
-fun BlankAvatar() {
-    Box(
-        modifier = Modifier
-            .size(48.dp)
-            .clip(CircleShape)
-            .background(MaterialTheme.colorScheme.onPrimary)
-    )
-}
-
 
 @Composable
 fun InboxScreen(modifier: Modifier = Modifier ,
-                navController: NavController
+                navController: NavController ,
+                viewModel: EmailViewModel? = null
 ) {
+    val context = LocalContext.current
+    val emails = if(viewModel!=null){
+        viewModel.emails.collectAsLazyPagingItems()
+    }else{
+        null
+    }
+    LaunchedEffect(Unit) {
+        emails?.refresh()
+    }
+    LaunchedEffect(Unit) {
+        if (viewModel != null) {
 
+        val accessToken = SecurePrefs.getPrefs(context = context).getString("accessToken", "") ?: ""
+//        if(accessToken != "") {
+//            viewModel.loadEmails(accessToken)
+//        }
+    }
+    }
     val listState = rememberLazyListState()
     var showTopBar by remember { mutableStateOf(true) }
 
@@ -131,11 +109,20 @@ fun InboxScreen(modifier: Modifier = Modifier ,
             state = listState,
             modifier = modifier
                 .padding(padding)
+                .padding(bottom = 16.dp)
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background)
         ) {
-            items(emailList) { email ->
-                EmailCard(email = email , navController = navController )
+            if(emails!=null)
+            items(emails.itemCount) { index ->
+
+                emails[index]?.let { email ->
+                    EmailCard(
+                        email = email,
+                        navController = navController
+                    )
+                }
+
             }
         }
     }
@@ -145,7 +132,7 @@ fun InboxScreen(modifier: Modifier = Modifier ,
 @Composable
 fun InboxScreenPreview(){
     var navController = rememberNavController()
-    InboxScreen(navController = navController)
+    InboxScreen(navController = navController )
 }
 
 

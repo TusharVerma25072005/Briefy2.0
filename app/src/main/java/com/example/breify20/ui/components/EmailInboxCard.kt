@@ -1,6 +1,7 @@
 package com.example.breify20.ui.components
 
 import PriorityIndicator
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -25,20 +26,18 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.example.breify20.ui.screens.BlankAvatar
-import com.example.breify20.ui.screens.EmailItem
+import com.example.breify20.model.email.EmailItem
 import com.example.breify20.ui.screens.sample
 
 @Composable
 fun EmailCard(email: EmailItem , navController : NavController) {
-
     Card(
         modifier = Modifier
             .padding(horizontal = 2.dp, vertical = 0.dp)
             .fillMaxWidth()
             .clickable(
                 onClick = {
-                    navController.navigate("email")
+                    navController.navigate("email/${email.id}")
                 }
             )
 
@@ -62,7 +61,7 @@ fun EmailCard(email: EmailItem , navController : NavController) {
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    BlankAvatar()
+                    SenderAvatar(senderName = email.senderName)
                     Spacer(modifier = Modifier.width(8.dp))
                     Column(
                         modifier = Modifier.weight(1f)

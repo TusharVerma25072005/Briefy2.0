@@ -64,7 +64,6 @@ fun LoginScreen(
     LaunchedEffect(loginSuccess) {
         if (loginSuccess) {
             WorkManagerHelper.restartEmailSync(context)
-            Log.d("LOGIN ", "SUCCESS");
             navController.navigate("inbox") {
                 popUpTo("login") { inclusive = true }
             }

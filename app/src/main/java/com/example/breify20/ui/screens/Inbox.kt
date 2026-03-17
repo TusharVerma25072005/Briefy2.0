@@ -43,6 +43,7 @@ fun InboxScreen(modifier: Modifier = Modifier ,
                 viewModel: EmailViewModel? = null
 ) {
     val context = LocalContext.current
+    Log.d("View MODEL" , viewModel.toString())
     val emails = if(viewModel!=null){
         viewModel.emails.collectAsLazyPagingItems()
     }else{

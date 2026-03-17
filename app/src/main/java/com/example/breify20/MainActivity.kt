@@ -13,6 +13,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
@@ -67,7 +71,19 @@ fun AppNavHost(mail: String?){
     val context = LocalContext.current
     val authViewModel: AuthViewModel = viewModel()
     val prefs = SecurePrefs.getPrefs(context).contains("email")
-    val provider = SecurePrefs.getPrefs(context).getString("provider", "")
+    var provider by remember {
+        mutableStateOf(
+            SecurePrefs.getPrefs(context).getString("provider", "")
+        )
+    }
+    val loginSuccess = authViewModel.loginSuccess.value
+
+    LaunchedEffect(loginSuccess) {
+        if (loginSuccess) {
+            Log.d("Recomposition","Triggered")
+            provider = SecurePrefs.getPrefs(context).getString("provider", "")
+        }
+    }
     var navController  = rememberNavController()
     val db = DatabaseProvider.getDatabase(context)
     val viewModel : EmailViewModel? = if(provider == "gmail"){

@@ -109,6 +109,7 @@ fun AppNavHost(mail: String?){
     LaunchedEffect(accessToken) {
         if (accessToken.isNotEmpty()) {
             WorkManagerHelper.scheduleEmailSync(context)
+            WorkManagerHelper.scheduleTokenRefresh(context)
         }
     }
     var startDest = if(prefs){

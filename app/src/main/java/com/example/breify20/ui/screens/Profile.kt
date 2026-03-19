@@ -87,25 +87,18 @@ fun ProfileScreen(modifier: Modifier = Modifier , navController: NavController ,
                     )
                 }
             }
-
             Spacer(modifier = Modifier.height(40.dp))
-
             Avatar(size = true)
-
             Spacer(modifier = Modifier.height(12.dp))
-
             Text(
                 text = name?:"",
                 fontWeight = FontWeight.Bold,
                 style = MaterialTheme.typography.titleLarge
             )
-
             Spacer(modifier = Modifier.height(28.dp))
-
             ProfileField(label = "Name", value = name?:"")
             ProfileField(label = "Email", value = email?:"")
             Spacer(modifier = Modifier.height(32.dp))
-
             Button(
                 onClick = {
                     Log.d("PROFILE" , "Logging out")

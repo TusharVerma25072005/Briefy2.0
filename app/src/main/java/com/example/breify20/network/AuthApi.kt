@@ -11,4 +11,11 @@ interface AuthApi {
     suspend fun login(
         @Body request: LoginRequest
     ): Response<LoginResponse>
+
+
+    @POST("api/auth/token-refresh")
+    suspend fun refreshUsingCredentials(
+        @Body request: LoginRequest
+    ): Response<LoginResponse>
+
 }

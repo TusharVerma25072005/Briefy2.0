@@ -5,8 +5,10 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import com.example.breify20.model.email.Category
 import com.example.breify20.model.email.EmailItem
+import com.example.breify20.model.email.SummariesResponse
 import com.example.breify20.ui.screens.EmailPriority
 import kotlinx.coroutines.flow.Flow
 
@@ -38,4 +40,41 @@ interface EmailDao {
     @Query("SELECT id FROM emails")
     suspend fun getAllEmailIds(): List<String>
 
+    @Query("SELECT * FROM emails WHERE category = :category")
+    suspend fun getEmailsByCategoryList(category: Category): List<EmailItem>
+
+    @Query("SELECT id FROM emails WHERE summary =='' ")
+    suspend fun getEmailsWithEmptySummary(): List<String>
+
+    @Query("""
+        UPDATE emails
+        SET summary = :summary,
+            detailedSummary = :detailedSummary,
+            priority = :priority,
+            embedding = :embedding,
+            category = :category
+        WHERE id = :emailId
+    """)
+    suspend fun updateEmailSummary(
+        emailId: String,
+        summary: String,
+        detailedSummary : String,
+        priority: String,
+        embedding: String,
+        category: String
+    )
+
+    @Transaction
+    suspend fun updateEmailSummariesBulk(summaries: List<SummariesResponse>) {
+        for (summary in summaries) {
+            updateEmailSummary(
+                emailId = summary.emailId,
+                summary = summary.summary,
+                priority = summary.priority,
+                embedding = summary.embedding,
+                category = summary.category,
+                detailedSummary = summary.detailedSummary
+            )
+        }
+    }
 }

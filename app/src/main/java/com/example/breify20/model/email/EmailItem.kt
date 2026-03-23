@@ -24,6 +24,7 @@ data class EmailItem(
     val isRead: Boolean,
     val body: String,
     val category: Category,
-    val bodyType: String
+    val bodyType: String,
+    val embedding : String=""
 
 )

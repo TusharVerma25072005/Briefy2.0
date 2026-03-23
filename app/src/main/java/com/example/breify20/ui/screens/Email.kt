@@ -59,7 +59,8 @@ var sample = EmailItem(
     time = "10:30 AM",
     detailedSummary = "The email outlines final updates to the Q4 roadmap and budget allocation following the latest review cycle. Key feedback has been incorporated, with specific attention given to budget adjustments.\n",
     category = Category.WORK,
-    bodyType = "text/plain"
+    bodyType = "text/plain",
+    embedding = ""
 )
 
 

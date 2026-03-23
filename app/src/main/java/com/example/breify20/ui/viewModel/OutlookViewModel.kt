@@ -9,6 +9,7 @@ import com.example.breify20.repository.OutlookRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.launch
 
@@ -17,6 +18,8 @@ class OutlookViewModel(
     private val repository: OutlookRepository
 ) : ViewModel() , EmailViewModel {
 
+    private val _searchResults = MutableStateFlow<List<EmailItem>>(emptyList())
+    override val searchResults = _searchResults.asStateFlow()
 
 
     override val selectedCategory = MutableStateFlow<Category?>(null)
@@ -53,6 +56,15 @@ class OutlookViewModel(
 
     override fun getMailById(emailId : String): Flow<EmailItem>{
         return repository.getMailById(emailId)
+    }
+
+    override fun search(query: String , category : String?) {
+        viewModelScope.launch {
+            if (query.isBlank()) return@launch
+
+//            val results = repository.semanticSearch(query, category)
+//            _searchResults.value = results
+        }
     }
 
 }

@@ -8,8 +8,10 @@ import com.example.breify20.data.SensitiveDataProcessor
 import com.example.breify20.data.convertPairsToString
 import com.example.breify20.data.local.EmailDao
 import com.example.breify20.data.local.SensitiveMappingDao
+import com.example.breify20.data.toFloatArray
 import com.example.breify20.model.email.Category
 import com.example.breify20.model.email.EmailItem
+import com.example.breify20.model.email.RawEmails
 import com.example.breify20.model.email.SensitiveMapping
 import com.example.breify20.network.RetrofitClient
 import com.example.breify20.ui.screens.EmailPriority
@@ -20,6 +22,7 @@ class OutlookRepository(
     private val mappingDao: SensitiveMappingDao
 ) {
     private val api = RetrofitClient.outlookApi
+    private val breifyAppi = RetrofitClient.authApi
     fun formatOutlookDate(date: String): String {
         val instant = java.time.Instant.parse(date)
         val formatter = java.time.format.DateTimeFormatter
@@ -28,11 +31,12 @@ class OutlookRepository(
 
         return formatter.format(instant)
     }
+
     suspend fun fetchMails(accessToken: String) {
         try {
-
             val response = api.getMessages("Bearer $accessToken")
             val exists = emailDao.getAllEmailIds()
+            val rawEmails = mutableListOf<RawEmails>()
             val emails = response.value.mapNotNull {
                 if(exists.contains(it.id)){
                     return@mapNotNull null
@@ -49,7 +53,8 @@ class OutlookRepository(
                     isRead = it.isRead,
                     body = it.body.content,
                     category = Category.WORK,
-                    bodyType = if (it.body.contentType == "html") "text/html" else "text/plain"
+                    bodyType = if (it.body.contentType == "html") "text/html" else "text/plain",
+                    embedding = ""
                 )
                 val result = SensitiveDataProcessor.extractSensitiveData(email.body)
                 val pairString = convertPairsToString(result.pairs)
@@ -60,15 +65,18 @@ class OutlookRepository(
                     )
                 )
                 //here send to server
+                val maskedBody = result.maskedBody
+                val id = it.id
+                rawEmails.add(RawEmails(id , email.subject , maskedBody))
                 email
             }
-
+            val res = breifyAppi.sendSummaries(
+                rawEmails
+            )
+            Log.d("SUMMARIES RESPONSE" , res.message().toString())
             emailDao.insertEmails(emails)
-
         } catch (e: Exception) {
-
             Log.e("OUTLOOK_FETCH", "Error fetching emails", e)
-
         }
     }
     fun getPagedEmails(): Flow<PagingData<EmailItem>> {
@@ -80,11 +88,9 @@ class OutlookRepository(
             pagingSourceFactory = { emailDao.pagingSource() }
         ).flow
     }
-
     fun deleteAllMails(){
         emailDao.deleteAll()
     }
-
     fun getEmailsByCategory( category : Category) : Flow<PagingData<EmailItem>>{
         return Pager<Int, EmailItem>(
             config = PagingConfig(
@@ -93,8 +99,13 @@ class OutlookRepository(
             pagingSourceFactory = { emailDao.getEmailsByCategory(category) }
         ).flow
     }
-
     fun getMailById(emailId : String): Flow<EmailItem>{
         return emailDao.getMailById(emailId)
     }
+//    suspend fun semanticSearch(
+//        query: String,
+//        category: String?
+//    ): List<EmailItem> {
+//
+//    }
 }

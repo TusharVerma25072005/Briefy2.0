@@ -14,6 +14,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -30,6 +31,7 @@ import com.example.breify20.data.SecurePrefs
 import com.example.breify20.ui.components.BottomBar
 import com.example.breify20.ui.components.EmailCard
 import com.example.breify20.ui.viewModel.EmailViewModel
+import kotlinx.coroutines.delay
 
 enum class EmailPriority {
     HIGH,
@@ -43,7 +45,7 @@ fun InboxScreen(modifier: Modifier = Modifier ,
                 viewModel: EmailViewModel? = null
 ) {
     val context = LocalContext.current
-    Log.d("View MODEL" , viewModel.toString())
+    var searchQuery by remember { mutableStateOf("") }
     val emails = if(viewModel!=null){
         viewModel.emails.collectAsLazyPagingItems()
     }else{
@@ -54,16 +56,23 @@ fun InboxScreen(modifier: Modifier = Modifier ,
     }
     LaunchedEffect(Unit) {
         if (viewModel != null) {
-
         val accessToken = SecurePrefs.getPrefs(context = context).getString("accessToken", "") ?: ""
 //        if(accessToken != "") {
 //            viewModel.loadEmails(accessToken)
 //        }
     }
     }
+    LaunchedEffect(searchQuery) {
+        delay(300)
+        if (searchQuery.isNotBlank()) {
+            viewModel?.search(searchQuery, null)
+        }
+    }
     val listState = rememberLazyListState()
     var showTopBar by remember { mutableStateOf(true) }
-
+    val searchResults by viewModel?.searchResults?.collectAsState() ?: remember { mutableStateOf(emptyList()) }
+    val isSearching = searchQuery.isNotBlank()
+    Log.d("INBOX",isSearching.toString())
     LaunchedEffect(listState) {
         var lastIndex = 0
         var lastOffset = 0
@@ -92,7 +101,10 @@ fun InboxScreen(modifier: Modifier = Modifier ,
                 enter = expandVertically(),
                 exit = shrinkVertically()
             ) {
-                Topbar(modifier = modifier , navController = navController)
+                Topbar(modifier = modifier , navController = navController ,
+                    searchQuery = searchQuery,
+                    onSearchChange = { searchQuery = it }
+                )
             }
         },
         bottomBar = {
@@ -114,26 +126,30 @@ fun InboxScreen(modifier: Modifier = Modifier ,
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background)
         ) {
-            if(emails!=null)
-            items(emails.itemCount) { index ->
+            if (isSearching) {
+                items(searchResults.size) { index ->
+                    val email = searchResults[index]
+                    EmailCard(email = email, navController = navController)
+                }
+            } else {
+                if(emails!=null) {
+                    items(emails.itemCount) { index ->
+                        emails[index]?.let { email ->
+                            EmailCard(
+                                email = email,
+                                navController = navController
+                            )
+                        }
 
-                emails[index]?.let { email ->
-                    EmailCard(
-                        email = email,
-                        navController = navController
-                    )
+                    }
                 }
 
             }
+
         }
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun InboxScreenPreview(){
-    var navController = rememberNavController()
-    InboxScreen(navController = navController )
-}
+
 
 

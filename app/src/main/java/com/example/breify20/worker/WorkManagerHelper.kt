@@ -10,10 +10,13 @@ object WorkManagerHelper {
             .cancelUniqueWork("email_sync_worker")
         WorkManager.getInstance(context)
             .cancelUniqueWork("token_refresh_worker")
-        Log.d("WORKER","RESTARTED")
+        WorkManager.getInstance(context)
+            .cancelUniqueWork("summary_fetch_worker")
+
 
         scheduleEmailSync(context)
         scheduleTokenRefresh(context)
+        scheduleSummaryFetch(context)
     }
     fun scheduleTokenRefresh(context: Context) {
         val constraints = Constraints.Builder()
@@ -49,8 +52,31 @@ object WorkManagerHelper {
                 .build()
         WorkManager.getInstance(context).enqueueUniquePeriodicWork(
             "email_sync_worker",
-            ExistingPeriodicWorkPolicy.KEEP,
+            ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE,
             request
         )
+    }
+
+    fun scheduleSummaryFetch(context: Context) {
+        val constraints = Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .build()
+
+        val request =
+            PeriodicWorkRequestBuilder<SummaryFetchWorker>(
+                15,
+                TimeUnit.MINUTES
+            )
+//                .setInitialDelay(2 , TimeUnit.MINUTES)
+                .setConstraints(constraints)
+                .build()
+
+        WorkManager.getInstance(context).enqueueUniquePeriodicWork(
+            "summary_fetch_worker",
+            ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE,
+            request
+        )
+        Log.d("SUMMARY WORKER","SCHEDUKLED")
+
     }
 }

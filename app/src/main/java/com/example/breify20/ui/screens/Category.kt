@@ -13,6 +13,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -29,6 +30,7 @@ import com.example.breify20.ui.components.BottomBar
 import com.example.breify20.ui.components.CategorySelectBox
 import com.example.breify20.ui.components.EmailCard
 import com.example.breify20.ui.viewModel.EmailViewModel
+import kotlinx.coroutines.delay
 
 @Composable
 fun CategoryScreen(
@@ -44,8 +46,18 @@ fun CategoryScreen(
     val listState = rememberLazyListState()
     var showBars by remember { mutableStateOf(true) }
     var selectedCategory by remember { mutableStateOf(Category.WORK) }
+    var searchQuery by remember { mutableStateOf("") }
+
+    val searchResults by viewModel?.searchResults?.collectAsState() ?: remember { mutableStateOf(emptyList()) }
     val filteredEmails = emails?.itemSnapshotList?.items?.filter {
         it.category == selectedCategory
+    }
+
+    LaunchedEffect(searchQuery) {
+        delay(300)
+        if (searchQuery.isNotBlank()) {
+            viewModel?.search(searchQuery , selectedCategory.toString())
+        }
     }
     LaunchedEffect(listState) {
         var lastIndex = 0
@@ -61,7 +73,7 @@ fun CategoryScreen(
             lastOffset = offset
         }
     }
-
+    val isSearching = searchQuery.isNotBlank()
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         contentWindowInsets = WindowInsets(0),
@@ -72,7 +84,10 @@ fun CategoryScreen(
                 exit = shrinkVertically()
             ) {
                 Column {
-                    Topbar(modifier = modifier , navController = navController)
+                    Topbar(modifier = modifier , navController = navController ,
+                        searchQuery = searchQuery,
+                        onSearchChange = { searchQuery = it }
+                    )
                     CategorySelectBox(selected = selectedCategory, onSelect = {
                         selectedCategory = it
                     })
@@ -97,9 +112,19 @@ fun CategoryScreen(
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background)
         ) {
-            if(filteredEmails!=null)
-            items(filteredEmails) { email ->
-                EmailCard(email = email , navController = navController)
+            if (isSearching) {
+
+                items(searchResults.size) { index ->
+                    val email = searchResults[index]
+                    EmailCard(email = email, navController = navController)
+                }
+
+            } else {
+
+                if (filteredEmails != null)
+                    items(filteredEmails) { email ->
+                        EmailCard(email = email, navController = navController)
+                    }
             }
         }
     }

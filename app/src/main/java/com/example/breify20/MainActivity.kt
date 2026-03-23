@@ -1,12 +1,16 @@
 package com.example.breify20
-
+import android.Manifest
 import CategoryScreen
 import LoginScreen
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -20,6 +24,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHost
@@ -28,6 +33,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import androidx.work.WorkManager
 import com.example.breify20.data.SecurePrefs
 import com.example.breify20.data.local.DatabaseProvider
 import com.example.breify20.repository.GmailRepository
@@ -69,6 +75,31 @@ fun GreetingPreview() {
 @Composable
 fun AppNavHost(mail: String?){
     val context = LocalContext.current
+    val activity = context as ComponentActivity
+
+    val notificationPermissionLauncher =
+        rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.RequestPermission()
+        ) { isGranted ->
+            if (isGranted) {
+                Log.d("Permission", "Notification permission granted")
+            } else {
+                Log.d("Permission", "Notification permission denied ")
+            }
+        }
+
+    LaunchedEffect(Unit) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
+        }
+    }
+
     val authViewModel: AuthViewModel = viewModel()
     val prefs = SecurePrefs.getPrefs(context).contains("email")
     var provider by remember {
@@ -87,13 +118,13 @@ fun AppNavHost(mail: String?){
     var navController  = rememberNavController()
     val db = DatabaseProvider.getDatabase(context)
     val viewModel : EmailViewModel? = if(provider == "gmail"){
-        val repository = GmailRepository(db.emailDao() , db.sensitiveMappingDao())
+        val repository = GmailRepository(db.emailDao() , db.sensitiveMappingDao() )
         val factory = GmailViewModelFactory(repository)
         val gmailViewModel: GmailViewModel = viewModel(factory = factory)
         Log.d("GmailViewModel" , gmailViewModel.toString())
         gmailViewModel
     }else if(provider == "outlook"){
-        val outlookRepo = OutlookRepository(db.emailDao() , db.sensitiveMappingDao())
+        val outlookRepo = OutlookRepository(db.emailDao() , db.sensitiveMappingDao() )
         val factory = OutlookViewModelFactory(outlookRepo)
 
         val outlookViewModel: OutlookViewModel = viewModel(factory = factory)
@@ -110,6 +141,7 @@ fun AppNavHost(mail: String?){
         if (accessToken.isNotEmpty()) {
             WorkManagerHelper.scheduleEmailSync(context)
             WorkManagerHelper.scheduleTokenRefresh(context)
+            WorkManagerHelper.scheduleSummaryFetch(context)
         }
     }
     var startDest = if(prefs){

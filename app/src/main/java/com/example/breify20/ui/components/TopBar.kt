@@ -30,9 +30,9 @@ import com.example.breify20.R
 import com.example.breify20.ui.components.Avatar
 
 @Composable
-fun Topbar(modifier : Modifier = Modifier , navController: NavController) {
+fun Topbar(modifier : Modifier = Modifier , navController: NavController ,  searchQuery: String,
+           onSearchChange: (String) -> Unit) {
 
-    var searchQuery by remember { mutableStateOf("") }
     Column(
         modifier = modifier.fillMaxWidth()
             .background(color = MaterialTheme.colorScheme.surfaceVariant)
@@ -71,7 +71,7 @@ fun Topbar(modifier : Modifier = Modifier , navController: NavController) {
                 }
                 BasicTextField(
                     value = searchQuery,
-                    onValueChange = { searchQuery = it },
+                    onValueChange = onSearchChange,
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -95,5 +95,5 @@ fun Topbar(modifier : Modifier = Modifier , navController: NavController) {
 @Preview(showBackground = true)
 fun TopBarPreview(){
     var navController = rememberNavController()
-    Topbar( navController = navController)
+    Topbar( navController = navController , searchQuery = "" , onSearchChange = {})
 }

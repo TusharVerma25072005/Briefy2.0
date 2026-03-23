@@ -11,11 +11,14 @@ import com.example.breify20.data.getHeader
 import com.example.breify20.data.local.EmailDao
 import com.example.breify20.data.local.SensitiveMappingDao
 import com.example.breify20.data.parseSender
+import com.example.breify20.data.toDbString
+import com.example.breify20.data.toFloatArray
 import com.example.breify20.model.email.Category
 import com.example.breify20.model.email.EmailBody
 import com.example.breify20.model.email.EmailItem
 import com.example.breify20.model.email.GmailMessageResponse
 import com.example.breify20.model.email.Payload
+import com.example.breify20.model.email.RawEmails
 import com.example.breify20.model.email.SensitiveMapping
 import com.example.breify20.network.RetrofitClient
 import com.example.breify20.ui.screens.EmailPriority
@@ -27,9 +30,10 @@ import java.util.Locale
 
 class GmailRepository(
     private val emailDao: EmailDao,
-    private val mappingDao: SensitiveMappingDao
+    private val mappingDao: SensitiveMappingDao,
 ) {
     private val gmailApi = RetrofitClient.gmailApi
+    private val breifyApi = RetrofitClient.authApi
 
     fun formatEmailDate(dateString: String): String {
         return try {
@@ -97,14 +101,15 @@ class GmailRepository(
             senderName = senderName,
             senderEmail = senderEmail,
             subject = subject,
-            summary = message.snippet,
+            summary = "",
             detailedSummary = "",
             priority = EmailPriority.MEDIUM,
             time = date,
             isRead = false,
             body = emailBody.content,
             bodyType = emailBody.mimeType,
-            category = Category.WORK
+            category = Category.WORK,
+            embedding = ""
         )
     }
     suspend fun fetchEmails(accessToken:String):List<EmailItem> {
@@ -113,12 +118,12 @@ class GmailRepository(
                 gmailApi.getMessages("Bearer $accessToken")
             val emails = mutableListOf<EmailItem>()
             val exists = emailDao.getAllEmailIds()
+            val rawEmails = mutableListOf<RawEmails>()
             response.messages.forEach {
                 val message = gmailApi.getMessageById("Bearer $accessToken", it.id)
                 if(exists.contains(message.id)){
                     return@forEach
                 }
-                Log.d("MESSAGE" , message.toString())
                 val email = mapToEmailItem(message)
                 val result = SensitiveDataProcessor.extractSensitiveData(email.body)
                 val pairString = convertPairsToString(result.pairs)
@@ -128,12 +133,18 @@ class GmailRepository(
                         pairs = pairString
                     )
                 )
-                //here send masked body to server
-//                Log.d("MASKED BODY " , result.maskedBody)
-//                Log.d("PAIRS" , pairString)
+                val maskedBody = result.maskedBody
+                val id = email.id
+                rawEmails.add(RawEmails(id , email.subject , maskedBody))
+
                 emails.add(email)
+                Log.d("Email Mesage" , email.subject.toString())
             }
             emailDao.insertEmails(emails)
+            Log.d("API_CALL", "Calling API...")
+            val res = breifyApi.sendSummaries(rawEmails)
+            Log.d("API_RESPONSE", res.message().toString())
+
             emails
         } catch (e: Exception) {
             Log.e("GMAIL_ERROR", "Error fetching emails", e)
@@ -163,4 +174,11 @@ class GmailRepository(
     fun getMailById(emailId : String): Flow<EmailItem>{
         return emailDao.getMailById(emailId)
     }
+//    suspend fun semanticSearch(
+//        query: String,
+//        category: String?
+//    ): List<EmailItem> {
+//
+//        return
+//    }
 }

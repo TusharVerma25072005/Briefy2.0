@@ -16,7 +16,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun SenderAvatar(senderName: String) {
 
-    val initial = senderName.first().uppercase()
+    val initial = senderName.firstOrNull()?.uppercase() ?: "?"
 
     Box(
         modifier = Modifier

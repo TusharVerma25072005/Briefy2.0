@@ -21,8 +21,10 @@ class GmailViewModel(
 ) : ViewModel() , EmailViewModel {
 
 
-    override val selectedCategory = MutableStateFlow<Category?>(null)
+    private val _searchResults = MutableStateFlow<List<EmailItem>>(emptyList())
+    override val searchResults = _searchResults.asStateFlow()
 
+    override val selectedCategory = MutableStateFlow<Category?>(null)
     override val emails =
         selectedCategory
             .flatMapLatest { category ->
@@ -33,8 +35,6 @@ class GmailViewModel(
                 }
             }
             .cachedIn(viewModelScope)
-
-
     override fun loadEmails(accessToken:String){
         viewModelScope.launch {
             repository.fetchEmails(accessToken)
@@ -45,16 +45,22 @@ class GmailViewModel(
             repository.deleteAllMails()
         }
     }
-
     override fun getMailById(emailId : String): Flow<EmailItem>{
         return repository.getMailById(emailId)
     }
-
     override fun showAllEmails() {
         selectedCategory.value = null
     }
-
     override fun showSelectedCategory(category  : String){
         selectedCategory.value = Category.valueOf(category)
+    }
+
+    override fun search(query: String , category : String?) {
+        viewModelScope.launch {
+            if (query.isBlank()) return@launch
+
+//            val results = repository.semanticSearch(query , category )
+//            _searchResults.value = results
+        }
     }
 }

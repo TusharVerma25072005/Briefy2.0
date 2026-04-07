@@ -17,7 +17,7 @@ import kotlinx.coroutines.launch
 class OutlookViewModel(
     private val repository: OutlookRepository
 ) : ViewModel() , EmailViewModel {
-
+    override val isSearching = MutableStateFlow(false)
     private val _searchResults = MutableStateFlow<List<EmailItem>>(emptyList())
     override val searchResults = _searchResults.asStateFlow()
     override val selectedCategory = MutableStateFlow<Category?>(null)
@@ -63,6 +63,9 @@ class OutlookViewModel(
             val results = repository.semanticSearch(query, category)
             _searchResults.value = results
         }
+    }
+    override fun clearSearchResults() {
+        _searchResults.value = emptyList()
     }
 
 }

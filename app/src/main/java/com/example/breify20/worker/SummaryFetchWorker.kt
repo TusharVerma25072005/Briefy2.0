@@ -7,6 +7,7 @@ import androidx.work.WorkerParameters
 import com.example.breify20.Notification.NotificationHelper
 import com.example.breify20.data.SecurePrefs
 import com.example.breify20.data.local.DatabaseProvider
+import com.example.breify20.model.email.Category
 import com.example.breify20.model.email.SummariesRequest
 import com.example.breify20.network.RetrofitClient
 import com.example.breify20.ui.screens.EmailPriority
@@ -46,7 +47,7 @@ class SummaryFetchWorker(
 
                         priority = email.priority,
                         embedding = email.embedding,
-                        category = email.category,
+                        category = Category.valueOf((email.category).uppercase()).name,
                         detailedSummary = email.detailedSummary
                     )
                     if (email.priority == EmailPriority.URGENT.name) {

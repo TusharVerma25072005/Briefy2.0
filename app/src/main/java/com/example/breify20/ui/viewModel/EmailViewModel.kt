@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 
 interface EmailViewModel {
+    val isSearching: StateFlow<Boolean>
     fun search(query: String, category :String?)
     val searchResults: StateFlow<List<EmailItem>>
     val emails: Flow<PagingData<EmailItem>>
@@ -17,4 +18,5 @@ interface EmailViewModel {
     fun showAllEmails()
     fun showSelectedCategory(category: String)
     fun getMailById(emailId : String): Flow<EmailItem>
+    fun clearSearchResults()
 }

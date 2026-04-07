@@ -20,7 +20,7 @@ class GmailViewModel(
     private val repository: GmailRepository
 ) : ViewModel() , EmailViewModel {
 
-
+    override val isSearching = MutableStateFlow(false)
     private val _searchResults = MutableStateFlow<List<EmailItem>>(emptyList())
     override val searchResults = _searchResults.asStateFlow()
 
@@ -57,10 +57,19 @@ class GmailViewModel(
 
     override fun search(query: String , category : String?) {
         viewModelScope.launch {
+            Log.d("SEARCH_DEBUG", "query=$query category=$category")
             if (query.isBlank()) return@launch
+
+            isSearching.value = true        // ⏳ start loading
             _searchResults.value = emptyList()
-            val results = repository.semanticSearch(query , category )
+
+            val results = repository.semanticSearch(query , category)
+            Log.d("SEARCH_DEBUG", "results=$results")
             _searchResults.value = results
+            isSearching.value = false       // ✅ done
         }
+    }
+    override fun clearSearchResults() {
+        _searchResults.value = emptyList()
     }
 }

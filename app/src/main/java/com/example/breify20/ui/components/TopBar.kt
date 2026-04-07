@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -21,6 +23,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -28,10 +31,10 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.breify20.R
 import com.example.breify20.ui.components.Avatar
-
+import androidx.compose.ui.text.input.ImeAction
 @Composable
 fun Topbar(modifier : Modifier = Modifier , navController: NavController ,  searchQuery: String,
-           onSearchChange: (String) -> Unit) {
+           onSearchChange: (String) -> Unit ,  onSearchSubmit: (String) -> Unit) {
 
     Column(
         modifier = modifier.fillMaxWidth()
@@ -69,11 +72,22 @@ fun Topbar(modifier : Modifier = Modifier , navController: NavController ,  sear
                         style = MaterialTheme.typography.bodyMedium
                     )
                 }
+                val keyboardController = LocalSoftwareKeyboardController.current
+
                 BasicTextField(
                     value = searchQuery,
                     onValueChange = onSearchChange,
                     singleLine = true,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        imeAction = ImeAction.Search
+                    ),
+                    keyboardActions = KeyboardActions(
+                        onSearch = {
+                            keyboardController?.hide()
+                            onSearchSubmit(searchQuery)
+                        }
+                    )
                 )
             }
             Spacer(modifier = Modifier.width(12.dp))
@@ -95,5 +109,5 @@ fun Topbar(modifier : Modifier = Modifier , navController: NavController ,  sear
 @Preview(showBackground = true)
 fun TopBarPreview(){
     var navController = rememberNavController()
-    Topbar( navController = navController , searchQuery = "" , onSearchChange = {})
+    Topbar( navController = navController , searchQuery = "" , onSearchChange = {} , onSearchSubmit = {})
 }

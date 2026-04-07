@@ -192,8 +192,10 @@ class GmailRepository(
             val emails: List<EmailItem> = if (category == null) {
                 emailDao.getAllEmails()
             } else {
+                Log.d("EMAILS_DEBUG", "category=$category")
                 emailDao.getEmailsByCategoryList(Category.valueOf(category))
             }
+            Log.d("EMAILS_DEBUG", emails.toString())
             val gson = Gson()
             return emails.map { email ->
                 val type = object : TypeToken<List<Float>>() {}.type

@@ -33,6 +33,13 @@ import com.example.breify20.ui.components.EmailCard
 import com.example.breify20.ui.viewModel.EmailViewModel
 import kotlinx.coroutines.delay
 
+import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.layout.Box
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.ui.Alignment
+import com.example.breify20.ui.components.EmptyState
+
 enum class EmailPriority {
     URGENT,
     IMPORTANT,
@@ -45,6 +52,7 @@ fun InboxScreen(modifier: Modifier = Modifier ,
                 navController: NavController ,
                 viewModel: EmailViewModel? = null
 ) {
+
     val context = LocalContext.current
     var searchQuery by remember { mutableStateOf("") }
     val emails = if(viewModel!=null){
@@ -55,25 +63,20 @@ fun InboxScreen(modifier: Modifier = Modifier ,
     LaunchedEffect(Unit) {
         emails?.refresh()
     }
+    BackHandler(enabled = searchQuery.isNotEmpty()) {
+        searchQuery = ""
+        viewModel?.clearSearchResults()
+    }
     LaunchedEffect(Unit) {
         if (viewModel != null) {
         val accessToken = SecurePrefs.getPrefs(context = context).getString("accessToken", "") ?: ""
-//        if(accessToken != "") {
-//            viewModel.loadEmails(accessToken)
-//        }
     }
-    }
-    LaunchedEffect(searchQuery) {
-        delay(300)
-        if (searchQuery.isNotBlank()) {
-            viewModel?.search(searchQuery, null)
-        }
     }
     val listState = rememberLazyListState()
     var showTopBar by remember { mutableStateOf(true) }
     val searchResults by viewModel?.searchResults?.collectAsState() ?: remember { mutableStateOf(emptyList()) }
-    val isSearching = searchQuery.isNotBlank()
-    Log.d("INBOX",isSearching.toString())
+val isSearchingLoading by viewModel?.isSearching?.collectAsState()
+        ?: remember { mutableStateOf(false) }
     LaunchedEffect(listState) {
         var lastIndex = 0
         var lastOffset = 0
@@ -104,7 +107,10 @@ fun InboxScreen(modifier: Modifier = Modifier ,
             ) {
                 Topbar(modifier = modifier , navController = navController ,
                     searchQuery = searchQuery,
-                    onSearchChange = { searchQuery = it }
+                    onSearchChange = { searchQuery = it },
+                    onSearchSubmit = {
+                        viewModel?.search(it, null)
+                    }
                 )
             }
         },
@@ -127,29 +133,67 @@ fun InboxScreen(modifier: Modifier = Modifier ,
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background)
         ) {
-            if (isSearching) {
-                items(searchResults.size) { index ->
-                    val email = searchResults[index]
-                    EmailCard(email = email, navController = navController)
-                }
-            } else {
-                if(emails!=null) {
-                    items(emails.itemCount) { index ->
-                        emails[index]?.let { email ->
-                            EmailCard(
-                                email = email,
-                                navController = navController
-                            )
-                        }
 
+            if (emails != null && emails.loadState.refresh is androidx.paging.LoadState.Loading) {
+                item {
+                    Box(
+                        modifier = Modifier
+                            .fillParentMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator()
+                    }
+                }
+            }
+            else if (searchQuery.isNotBlank()) {
+
+                if (isSearchingLoading) {
+                    item {
+                        Box(
+                            modifier = Modifier.fillMaxSize().padding(top = 20.dp),
+                            contentAlignment = Alignment.Center,
+
+                        ) {
+
+                            CircularProgressIndicator()
+                        }
                     }
                 }
 
+                else if (searchResults.isEmpty()) {
+                    item {
+                        EmptyState("No results found")
+                    }
+                }
+
+                else {
+                    items(searchResults.size) { index ->
+                        val email = searchResults[index]
+                        EmailCard(email = email, navController = navController)
+                    }
+                }
             }
+
+            else {
+                if (emails != null && emails.itemCount == 0) {
+                    item {
+                        EmptyState("No emails available")
+                    }
+                } else {
+                    if (emails != null) {
+                        items(emails.itemCount) { index ->
+                            emails[index]?.let { email ->
+                                EmailCard(email = email, navController = navController)
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
         }
     }
-}
+
 
 
 

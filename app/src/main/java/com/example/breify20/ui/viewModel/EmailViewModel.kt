@@ -10,7 +10,6 @@ import kotlinx.coroutines.flow.StateFlow
 interface EmailViewModel {
     fun search(query: String, category :String?)
     val searchResults: StateFlow<List<EmailItem>>
-
     val emails: Flow<PagingData<EmailItem>>
     val selectedCategory: Flow<Category?>
     fun loadEmails(accessToken: String)

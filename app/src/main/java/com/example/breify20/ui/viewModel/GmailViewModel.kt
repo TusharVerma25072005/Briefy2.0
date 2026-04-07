@@ -58,9 +58,9 @@ class GmailViewModel(
     override fun search(query: String , category : String?) {
         viewModelScope.launch {
             if (query.isBlank()) return@launch
-
-//            val results = repository.semanticSearch(query , category )
-//            _searchResults.value = results
+            _searchResults.value = emptyList()
+            val results = repository.semanticSearch(query , category )
+            _searchResults.value = results
         }
     }
 }

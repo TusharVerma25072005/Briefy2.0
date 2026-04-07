@@ -43,8 +43,12 @@ interface EmailDao {
     @Query("SELECT * FROM emails WHERE category = :category")
     suspend fun getEmailsByCategoryList(category: Category): List<EmailItem>
 
-    @Query("SELECT id FROM emails WHERE summary =='' ")
-    suspend fun getEmailsWithEmptySummary(): List<String>
+    @Query("""
+    SELECT id FROM emails 
+    WHERE summary = '' OR summary IS NULL 
+    ORDER BY createdAt DESC
+    LIMIT 10
+""")    suspend fun getEmailsWithEmptySummary(): List<String>
 
     @Query("""
         UPDATE emails

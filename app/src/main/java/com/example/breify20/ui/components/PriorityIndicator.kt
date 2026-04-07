@@ -12,9 +12,10 @@ import com.example.breify20.ui.screens.EmailPriority
 fun PriorityIndicator(priority: EmailPriority, modifier : Modifier = Modifier) {
 
     val color = when (priority) {
-        EmailPriority.HIGH -> MaterialTheme.colorScheme.error
-        EmailPriority.MEDIUM -> MaterialTheme.colorScheme.primary
-        EmailPriority.LOW -> MaterialTheme.colorScheme.surfaceVariant
+        EmailPriority.URGENT -> MaterialTheme.colorScheme.error
+        EmailPriority.IMPORTANT -> MaterialTheme.colorScheme.primary
+        EmailPriority.NORMAL -> MaterialTheme.colorScheme.surfaceVariant
+        EmailPriority.LOW -> MaterialTheme.colorScheme.surface
     }
     Box(
         modifier = modifier

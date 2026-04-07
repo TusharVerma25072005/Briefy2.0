@@ -57,14 +57,6 @@ dependencies {
     implementation("com.google.mlkit:entity-extraction:16.0.0-beta5")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.3")
     implementation("androidx.work:work-runtime-ktx:2.9.0")
-
-
-
-    // You also need the DJL API and a generic engine for Android
-
-
-
-
     kapt("androidx.room:room-compiler:2.6.1")
 
     implementation(libs.androidx.core.ktx)

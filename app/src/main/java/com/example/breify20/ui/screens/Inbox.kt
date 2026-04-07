@@ -34,8 +34,9 @@ import com.example.breify20.ui.viewModel.EmailViewModel
 import kotlinx.coroutines.delay
 
 enum class EmailPriority {
-    HIGH,
-    MEDIUM,
+    URGENT,
+    IMPORTANT,
+    NORMAL,
     LOW
 }
 

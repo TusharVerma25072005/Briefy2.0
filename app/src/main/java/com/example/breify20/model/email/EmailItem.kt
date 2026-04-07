@@ -5,8 +5,13 @@ import androidx.room.PrimaryKey
 import com.example.breify20.ui.screens.EmailPriority
 
 
-enum class Category{
-    SPAM, WORK , EXEC
+enum class Category {
+    WORK,
+    PERSONAL,
+    NEWSLETTER,
+    FINANCE,
+    HR,
+    OTHER
 }
 
 @Entity(tableName = "emails")
@@ -25,6 +30,6 @@ data class EmailItem(
     val body: String,
     val category: Category,
     val bodyType: String,
-    val embedding : String=""
-
+    val embedding : String="",
+    val createdAt : Long = System.currentTimeMillis()
 )

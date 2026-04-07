@@ -1,18 +1,19 @@
 package com.example.breify20.repository
 
 import android.util.Log
+import android.widget.Toast
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import com.example.breify20.data.SensitiveDataProcessor
 import com.example.breify20.data.convertPairsToString
+import com.example.breify20.data.cosineSimilarity
 import com.example.breify20.data.decodeBody
+import com.example.breify20.data.getGmailTimestamp
 import com.example.breify20.data.getHeader
 import com.example.breify20.data.local.EmailDao
 import com.example.breify20.data.local.SensitiveMappingDao
 import com.example.breify20.data.parseSender
-import com.example.breify20.data.toDbString
-import com.example.breify20.data.toFloatArray
 import com.example.breify20.model.email.Category
 import com.example.breify20.model.email.EmailBody
 import com.example.breify20.model.email.EmailItem
@@ -20,11 +21,14 @@ import com.example.breify20.model.email.GmailMessageResponse
 import com.example.breify20.model.email.Payload
 import com.example.breify20.model.email.RawEmails
 import com.example.breify20.model.email.SensitiveMapping
+import com.example.breify20.model.login.EmbeddingResponse
+import com.example.breify20.model.login.TextRequest
 import com.example.breify20.network.RetrofitClient
 import com.example.breify20.ui.screens.EmailPriority
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.flow.Flow
 import java.text.SimpleDateFormat
-import java.util.Calendar
 import java.util.Locale
 
 
@@ -103,13 +107,15 @@ class GmailRepository(
             subject = subject,
             summary = "",
             detailedSummary = "",
-            priority = EmailPriority.MEDIUM,
+            priority = EmailPriority.NORMAL,
             time = date,
             isRead = false,
             body = emailBody.content,
             bodyType = emailBody.mimeType,
-            category = Category.WORK,
-            embedding = ""
+            category = Category.OTHER,
+            embedding = "",
+            createdAt = getGmailTimestamp(rawDate)
+
         )
     }
     suspend fun fetchEmails(accessToken:String):List<EmailItem> {
@@ -143,8 +149,7 @@ class GmailRepository(
             emailDao.insertEmails(emails)
             Log.d("API_CALL", "Calling API...")
             val res = breifyApi.sendSummaries(rawEmails)
-            Log.d("API_RESPONSE", res.message().toString())
-
+            Log.d("API_RESPONSE", res.toString())
             emails
         } catch (e: Exception) {
             Log.e("GMAIL_ERROR", "Error fetching emails", e)
@@ -174,11 +179,44 @@ class GmailRepository(
     fun getMailById(emailId : String): Flow<EmailItem>{
         return emailDao.getMailById(emailId)
     }
-//    suspend fun semanticSearch(
-//        query: String,
-//        category: String?
-//    ): List<EmailItem> {
-//
-//        return
-//    }
+
+    suspend fun semanticSearch(
+        query: String,
+        category: String?
+    ): List<EmailItem> {
+        try {
+
+
+            val resp: EmbeddingResponse = breifyApi.getEmbedding(TextRequest(query))
+            val queryEmbedding = resp.embedding
+            val emails: List<EmailItem> = if (category == null) {
+                emailDao.getAllEmails()
+            } else {
+                emailDao.getEmailsByCategoryList(Category.valueOf(category))
+            }
+            val gson = Gson()
+            return emails.map { email ->
+                val type = object : TypeToken<List<Float>>() {}.type
+                val emailEmbedding: List<Float> = if (email.embedding.isNotEmpty()) {
+                    gson.fromJson(email.embedding, type)
+                } else {
+                    emptyList()
+                }
+
+                val similarity = if (emailEmbedding.isNotEmpty()) {
+                    cosineSimilarity(queryEmbedding, emailEmbedding)
+                } else {
+                    0f
+                }
+
+                email to similarity
+            }
+                .sortedByDescending { it.second }
+                .map { it.first }
+        }catch(e : Exception){
+            Toast.makeText(null , "Error in semantic search, Please try again.." , Toast.LENGTH_LONG).show()
+            return emptyList()
+
+        }
+    }
 }

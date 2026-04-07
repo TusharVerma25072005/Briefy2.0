@@ -17,7 +17,7 @@ class Converters {
         return try{
             EmailPriority.valueOf(value.uppercase())
         }catch (e : Exception){
-            EmailPriority.MEDIUM
+            EmailPriority.NORMAL
         }
     }
 

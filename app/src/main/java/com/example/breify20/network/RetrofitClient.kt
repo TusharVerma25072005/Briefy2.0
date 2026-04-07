@@ -1,6 +1,8 @@
 package com.example.breify20.network
+import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.concurrent.TimeUnit
 
 object RetrofitClient {
     private const val SERVER_URL = "https://briefy2-0-backend.onrender.com/"
@@ -8,9 +10,16 @@ object RetrofitClient {
     private const val GMAIL_BASE_URL = "https://gmail.googleapis.com/"
 
 
-    val authApi:AuthApi by lazy {
+    private val okHttpClient = OkHttpClient.Builder()
+        .connectTimeout(120, TimeUnit.SECONDS)
+        .readTimeout(120, TimeUnit.SECONDS)
+        .writeTimeout(120, TimeUnit.SECONDS)
+        .build()
+
+    val authApi: AuthApi by lazy {
         Retrofit.Builder()
             .baseUrl(SERVER_URL)
+            .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(AuthApi::class.java)

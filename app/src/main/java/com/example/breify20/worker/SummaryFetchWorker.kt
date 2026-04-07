@@ -49,7 +49,7 @@ class SummaryFetchWorker(
                         category = email.category,
                         detailedSummary = email.detailedSummary
                     )
-                    if (email.priority == EmailPriority.HIGH.name) {
+                    if (email.priority == EmailPriority.URGENT.name) {
                         NotificationHelper.showHighPriorityNotification(
                             applicationContext,
                             email.summary

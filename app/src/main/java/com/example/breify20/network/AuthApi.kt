@@ -4,8 +4,10 @@ import com.example.breify20.model.email.RawEmails
 import com.example.breify20.model.email.RawEmailsResponse
 import com.example.breify20.model.email.SummariesRequest
 import com.example.breify20.model.email.SummariesResponse
+import com.example.breify20.model.login.EmbeddingResponse
 import com.example.breify20.model.login.LoginRequest
 import com.example.breify20.model.login.LoginResponse
+import com.example.breify20.model.login.TextRequest
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.POST
@@ -30,4 +32,9 @@ interface AuthApi {
     suspend fun sendSummaries(
         @Body request : List<RawEmails>
     ): Response<RawEmailsResponse>
+
+    @POST("api/getEmbedding")
+    suspend fun getEmbedding(
+        @Body request: TextRequest
+    ): EmbeddingResponse
 }

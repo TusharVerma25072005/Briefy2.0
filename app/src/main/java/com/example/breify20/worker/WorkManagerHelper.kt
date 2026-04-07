@@ -13,7 +13,6 @@ object WorkManagerHelper {
         WorkManager.getInstance(context)
             .cancelUniqueWork("summary_fetch_worker")
 
-
         scheduleEmailSync(context)
         scheduleTokenRefresh(context)
         scheduleSummaryFetch(context)

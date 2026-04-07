@@ -81,8 +81,6 @@ fun CategoryScreen(
         searchQuery = ""
         viewModel?.clearSearchResults()
     }
-    Log.d("DEBUG", "SearchResults size: ${searchResults.size}")
-    Log.d("UI_DEBUG", "selectedCategory=$selectedCategory")
 
     LaunchedEffect(listState) {
         var lastIndex = 0
@@ -99,6 +97,7 @@ fun CategoryScreen(
             lastOffset = offset
         }
     }
+
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),

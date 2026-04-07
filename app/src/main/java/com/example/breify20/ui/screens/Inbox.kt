@@ -36,9 +36,14 @@ import kotlinx.coroutines.delay
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.ui.Alignment
 import com.example.breify20.ui.components.EmptyState
+import androidx.compose.material3.pulltorefresh.*
+import androidx.compose.runtime.rememberCoroutineScope
+import com.example.breify20.worker.WorkManagerHelper
+import kotlinx.coroutines.launch
 
 enum class EmailPriority {
     URGENT,
@@ -46,7 +51,7 @@ enum class EmailPriority {
     NORMAL,
     LOW
 }
-
+@ExperimentalMaterial3Api
 @Composable
 fun InboxScreen(modifier: Modifier = Modifier ,
                 navController: NavController ,
@@ -54,6 +59,8 @@ fun InboxScreen(modifier: Modifier = Modifier ,
 ) {
 
     val context = LocalContext.current
+    var isRefreshing by remember { mutableStateOf(false) }
+    val pullRefreshState = rememberPullToRefreshState()
     var searchQuery by remember { mutableStateOf("") }
     val emails = if(viewModel!=null){
         viewModel.emails.collectAsLazyPagingItems()
@@ -95,6 +102,7 @@ val isSearchingLoading by viewModel?.isSearching?.collectAsState()
             lastOffset = offset
         }
     }
+    val scope = rememberCoroutineScope()
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -124,66 +132,73 @@ val isSearchingLoading by viewModel?.isSearching?.collectAsState()
             }
         }
     ) { padding ->
+        PullToRefreshBox(
+            isRefreshing = isRefreshing,
+            onRefresh = {
+                isRefreshing = true
 
-        LazyColumn(
-            state = listState,
-            modifier = modifier
-                .padding(padding)
-                .padding(bottom = 16.dp)
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
-        ) {
+                WorkManagerHelper.restartSync(context)
 
-            if (emails != null && emails.loadState.refresh is androidx.paging.LoadState.Loading) {
-                item {
-                    Box(
-                        modifier = Modifier
-                            .fillParentMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator()
-                    }
+                scope.launch {
+                    kotlinx.coroutines.delay(1000)
+                    isRefreshing = false
                 }
-            }
-            else if (searchQuery.isNotBlank()) {
+            },
+            state = pullRefreshState
+        ) {
+            LazyColumn(
+                state = listState,
+                modifier = modifier
+                    .padding(padding)
+                    .padding(bottom = 16.dp)
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.background)
+            ) {
 
-                if (isSearchingLoading) {
+                if (emails != null && emails.loadState.refresh is androidx.paging.LoadState.Loading) {
                     item {
                         Box(
-                            modifier = Modifier.fillMaxSize().padding(top = 20.dp),
-                            contentAlignment = Alignment.Center,
-
+                            modifier = Modifier
+                                .fillParentMaxSize(),
+                            contentAlignment = Alignment.Center
                         ) {
-
                             CircularProgressIndicator()
                         }
                     }
-                }
+                } else if (searchQuery.isNotBlank()) {
 
-                else if (searchResults.isEmpty()) {
-                    item {
-                        EmptyState("No results found")
-                    }
-                }
+                    if (isSearchingLoading) {
+                        item {
+                            Box(
+                                modifier = Modifier.fillMaxSize().padding(top = 20.dp),
+                                contentAlignment = Alignment.Center,
 
-                else {
-                    items(searchResults.size) { index ->
-                        val email = searchResults[index]
-                        EmailCard(email = email, navController = navController)
-                    }
-                }
-            }
+                                ) {
 
-            else {
-                if (emails != null && emails.itemCount == 0) {
-                    item {
-                        EmptyState("No emails available")
+                                CircularProgressIndicator()
+                            }
+                        }
+                    } else if (searchResults.isEmpty()) {
+                        item {
+                            EmptyState("No results found")
+                        }
+                    } else {
+                        items(searchResults.size) { index ->
+                            val email = searchResults[index]
+                            EmailCard(email = email, navController = navController)
+                        }
                     }
                 } else {
-                    if (emails != null) {
-                        items(emails.itemCount) { index ->
-                            emails[index]?.let { email ->
-                                EmailCard(email = email, navController = navController)
+                    if (emails != null && emails.itemCount == 0) {
+                        item {
+                            EmptyState("No emails available")
+                        }
+                    } else {
+                        if (emails != null) {
+                            items(emails.itemCount) { index ->
+                                emails[index]?.let { email ->
+                                    EmailCard(email = email, navController = navController)
+                                }
                             }
                         }
                     }

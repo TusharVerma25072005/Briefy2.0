@@ -66,7 +66,7 @@ object WorkManagerHelper {
                 15,
                 TimeUnit.MINUTES
             )
-                .setInitialDelay(2 , TimeUnit.MINUTES)
+//                .setInitialDelay(2 , TimeUnit.MINUTES)
                 .setConstraints(constraints)
                 .build()
 

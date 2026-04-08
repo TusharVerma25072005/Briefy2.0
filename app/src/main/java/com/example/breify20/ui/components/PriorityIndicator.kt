@@ -19,7 +19,7 @@ fun PriorityIndicator(priority: EmailPriority, modifier : Modifier = Modifier) {
     }
     Box(
         modifier = modifier
-            .width(12.dp)
+            .width(8.dp)
             .fillMaxHeight()
             .background(color)
     )

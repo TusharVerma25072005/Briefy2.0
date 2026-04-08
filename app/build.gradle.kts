@@ -57,6 +57,8 @@ dependencies {
     implementation("com.google.mlkit:entity-extraction:16.0.0-beta5")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.3")
     implementation("androidx.work:work-runtime-ktx:2.9.0")
+    implementation("androidx.core:core-splashscreen:1.0.1")
+    implementation("androidx.compose.material3:material3:1.2.1")
     kapt("androidx.room:room-compiler:2.6.1")
 
     implementation(libs.androidx.core.ktx)

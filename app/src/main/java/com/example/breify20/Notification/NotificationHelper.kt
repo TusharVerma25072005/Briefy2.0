@@ -8,6 +8,7 @@ import android.content.pm.PackageManager
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
+import com.example.breify20.R
 
 object NotificationHelper {
 
@@ -33,9 +34,9 @@ object NotificationHelper {
         notificationManager.createNotificationChannel(channel)
 
         val notification = NotificationCompat.Builder(context, channelId)
-            .setContentTitle("Important Email 📩")
+            .setContentTitle("Important Email !")
             .setContentText(subject)
-            .setSmallIcon(android.R.drawable.ic_dialog_email)
+            .setSmallIcon(R.drawable.logo_small)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .build()
 

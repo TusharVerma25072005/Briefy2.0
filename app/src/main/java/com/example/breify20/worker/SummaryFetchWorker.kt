@@ -6,7 +6,9 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.example.breify20.Notification.NotificationHelper
 import com.example.breify20.data.SecurePrefs
+import com.example.breify20.data.convertStringToPairs
 import com.example.breify20.data.local.DatabaseProvider
+import com.example.breify20.data.restoreSensitiveData
 import com.example.breify20.model.email.Category
 import com.example.breify20.model.email.SummariesRequest
 import com.example.breify20.network.RetrofitClient
@@ -28,6 +30,7 @@ class SummaryFetchWorker(
                 return Result.retry()
             }
             val emailDao = DatabaseProvider.getDatabase(applicationContext).emailDao()
+            val mappingDao = DatabaseProvider.getDatabase(applicationContext).sensitiveMappingDao()
             val emailIds = emailDao.getEmailsWithEmptySummary()
             if (emailIds.isEmpty()) {
                 Log.d("SummaryWorker", "No emails with empty summaries found")
@@ -38,19 +41,33 @@ class SummaryFetchWorker(
                 }
                 Log.d("EmailIDS for summary", summariesRequest.toString())
                 val res = RetrofitClient.authApi.getSummaries(summariesRequest)
-                //here
+
                 Log.d("SUMMARIES FETCH WORKER" , res.toString())
                 res.forEach { email ->
+                    Log.d("Email" , email.toString())
+                    val mapping = mappingDao.getPairs(email.emailId)
+                    val pairs = convertStringToPairs(mapping)
+                    val summary = email.summary
+                    val detailedSummary = email.detailedSummary
+                    //here
+
+                    Log.d("PAIRS" , pairs.toString())
+
+                    val restoredSummary = restoreSensitiveData(email.summary, pairs)
+                    val restoredDetailedSummary = restoreSensitiveData(email.detailedSummary, pairs)
+                    Log.d("PRIORITY" , restoredSummary)
+                    Log.d("PRIORITY" , restoredDetailedSummary)
                     emailDao.updateEmailSummary(
                         emailId = email.emailId,
-                        summary = email.summary,
-
-                        priority = email.priority,
+                        summary = restoredSummary,
+                        priority = (email.priority).uppercase(),
                         embedding = email.embedding,
                         category = Category.valueOf((email.category).uppercase()).name,
-                        detailedSummary = email.detailedSummary
+                        detailedSummary = restoredDetailedSummary
                     )
-                    if (email.priority == EmailPriority.URGENT.name) {
+                    Log.d("PRIORITY" , email.priority.toString())
+                    Log.d("PRIORITY", EmailPriority.URGENT.name)
+                    if (((email.priority).uppercase() == EmailPriority.URGENT.name) || ((email.priority).uppercase() == EmailPriority.IMPORTANT.name)) {
                         NotificationHelper.showHighPriorityNotification(
                             applicationContext,
                             email.summary

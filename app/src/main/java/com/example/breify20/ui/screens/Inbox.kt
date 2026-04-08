@@ -51,7 +51,7 @@ enum class EmailPriority {
     NORMAL,
     LOW
 }
-@ExperimentalMaterial3Api
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun InboxScreen(modifier: Modifier = Modifier ,
                 navController: NavController ,

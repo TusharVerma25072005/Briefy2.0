@@ -38,7 +38,6 @@ class OutlookRepository(
 
         return formatter.format(instant)
     }
-
     suspend fun fetchMails(accessToken: String) {
         try {
             val response = api.getMessages("Bearer $accessToken")
@@ -81,10 +80,9 @@ class OutlookRepository(
             val res = breifyAppi.sendSummaries(
                 rawEmails
             )
-            Log.d("SUMMARIES RESPONSE" , res.message().toString())
             emailDao.insertEmails(emails)
         } catch (e: Exception) {
-            Log.e("OUTLOOK_FETCH", "Error fetching emails", e)
+            Log.e("OUTLOOK ERROR", "Error fetching emails", e)
         }
     }
     fun getPagedEmails(): Flow<PagingData<EmailItem>> {
@@ -110,10 +108,7 @@ class OutlookRepository(
     fun getMailById(emailId : String): Flow<EmailItem>{
         return emailDao.getMailById(emailId)
     }
-    suspend fun semanticSearch(
-        query: String,
-        category: String?
-    ): List<EmailItem> {
+    suspend fun semanticSearch(query: String, category: String?): List<EmailItem> {
         try{
 
             val resp: EmbeddingResponse = breifyAppi.getEmbedding(TextRequest(query))
@@ -147,5 +142,8 @@ class OutlookRepository(
                 Toast.makeText(null , "Error in semantic search, Please try again.." , Toast.LENGTH_LONG).show()
                 return emptyList()
         }
+    }
+    suspend fun markAsRead(emailId : String){
+        emailDao.markAsRead(emailId)
     }
 }

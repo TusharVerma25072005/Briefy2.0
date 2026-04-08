@@ -81,4 +81,7 @@ interface EmailDao {
             )
         }
     }
+
+    @Query("UPDATE emails SET isRead = true WHERE id = :emailId")
+    suspend fun markAsRead(emailId: String)
 }

@@ -13,9 +13,9 @@ fun PriorityIndicator(priority: EmailPriority, modifier : Modifier = Modifier) {
 
     val color = when (priority) {
         EmailPriority.URGENT -> MaterialTheme.colorScheme.error
-        EmailPriority.IMPORTANT -> MaterialTheme.colorScheme.primary
-        EmailPriority.NORMAL -> MaterialTheme.colorScheme.surfaceVariant
-        EmailPriority.LOW -> MaterialTheme.colorScheme.surface
+        EmailPriority.IMPORTANT -> MaterialTheme.colorScheme.tertiary
+        EmailPriority.NORMAL -> MaterialTheme.colorScheme.primaryContainer
+        EmailPriority.LOW -> MaterialTheme.colorScheme.surfaceVariant
     }
     Box(
         modifier = modifier

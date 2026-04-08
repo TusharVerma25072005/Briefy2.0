@@ -22,8 +22,7 @@ class OutlookViewModel(
     override val searchResults = _searchResults.asStateFlow()
     override val selectedCategory = MutableStateFlow<Category?>(null)
 
-    override val emails =
-        selectedCategory
+    override val emails = selectedCategory
             .flatMapLatest { category ->
                 if (category == null) {
                     repository.getPagedEmails()
@@ -33,13 +32,11 @@ class OutlookViewModel(
             }
             .cachedIn(viewModelScope)
 
-
     override fun loadEmails(accessToken: String) {
         viewModelScope.launch {
             repository.fetchMails(accessToken)
         }
     }
-
     override fun deleteAllMails() {
         viewModelScope.launch(Dispatchers.IO){
             repository.deleteAllMails()
@@ -51,11 +48,9 @@ class OutlookViewModel(
     override fun showSelectedCategory(category  : String){
         selectedCategory.value = Category.valueOf(category)
     }
-
     override fun getMailById(emailId : String): Flow<EmailItem>{
         return repository.getMailById(emailId)
     }
-
     override fun search(query: String , category : String?) {
         viewModelScope.launch {
             if (query.isBlank()) return@launch
@@ -66,6 +61,11 @@ class OutlookViewModel(
     }
     override fun clearSearchResults() {
         _searchResults.value = emptyList()
+    }
+    override fun markAsRead(emailId:String){
+        viewModelScope.launch {
+            repository.markAsRead(emailId)
+        }
     }
 
 }

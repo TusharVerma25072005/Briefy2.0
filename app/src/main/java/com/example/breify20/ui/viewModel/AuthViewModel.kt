@@ -1,7 +1,6 @@
 package com.example.breify20.ui.viewModel
 
 import android.content.Context
-import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -19,7 +18,6 @@ class AuthViewModel: ViewModel() {
         viewModelScope.launch{
             try {
                 val response = repository.Login(mail, password)
-                Log.d("LOGIN RESP" , response.toString())
                 if (response.isSuccessful) {
                     val body = response.body()
                     if (body != null) {
@@ -28,6 +26,7 @@ class AuthViewModel: ViewModel() {
 
                             prefs.edit()
                                 .putString("email", body.email)
+                                .putString("password", password)
                                 .putString("name", body.name)
                                 .putString("provider", body.provider)
                                 .putString("photo", body.photo)

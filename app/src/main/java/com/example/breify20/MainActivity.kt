@@ -11,29 +11,21 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavHost
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import androidx.work.WorkManager
 import com.example.breify20.data.SecurePrefs
 import com.example.breify20.data.local.DatabaseProvider
 import com.example.breify20.repository.GmailRepository
@@ -121,15 +113,11 @@ fun AppNavHost(mail: String?){
         val repository = GmailRepository(db.emailDao() , db.sensitiveMappingDao() )
         val factory = GmailViewModelFactory(repository)
         val gmailViewModel: GmailViewModel = viewModel(factory = factory)
-        Log.d("GmailViewModel" , gmailViewModel.toString())
         gmailViewModel
     }else if(provider == "outlook"){
         val outlookRepo = OutlookRepository(db.emailDao() , db.sensitiveMappingDao() )
         val factory = OutlookViewModelFactory(outlookRepo)
-
         val outlookViewModel: OutlookViewModel = viewModel(factory = factory)
-
-        Log.d("OutlookViewModel" , outlookViewModel.toString())
         outlookViewModel
     }else{
         null

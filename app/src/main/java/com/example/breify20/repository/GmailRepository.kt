@@ -147,9 +147,7 @@ class GmailRepository(
                 Log.d("Email Mesage" , email.subject.toString())
             }
             emailDao.insertEmails(emails)
-            Log.d("API_CALL", "Calling API...")
             val res = breifyApi.sendSummaries(rawEmails)
-            Log.d("API_RESPONSE", res.toString())
             emails
         } catch (e: Exception) {
             Log.e("GMAIL_ERROR", "Error fetching emails", e)
@@ -179,23 +177,15 @@ class GmailRepository(
     fun getMailById(emailId : String): Flow<EmailItem>{
         return emailDao.getMailById(emailId)
     }
-
-    suspend fun semanticSearch(
-        query: String,
-        category: String?
-    ): List<EmailItem> {
+    suspend fun semanticSearch(query: String, category: String?): List<EmailItem> {
         try {
-
-
             val resp: EmbeddingResponse = breifyApi.getEmbedding(TextRequest(query))
             val queryEmbedding = resp.embedding
             val emails: List<EmailItem> = if (category == null) {
                 emailDao.getAllEmails()
             } else {
-                Log.d("EMAILS_DEBUG", "category=$category")
                 emailDao.getEmailsByCategoryList(Category.valueOf(category))
             }
-            Log.d("EMAILS_DEBUG", emails.toString())
             val gson = Gson()
             return emails.map { email ->
                 val type = object : TypeToken<List<Float>>() {}.type
@@ -221,4 +211,8 @@ class GmailRepository(
 
         }
     }
+    suspend fun markAsRead(emailId : String){
+        emailDao.markAsRead(emailId)
+    }
+
 }

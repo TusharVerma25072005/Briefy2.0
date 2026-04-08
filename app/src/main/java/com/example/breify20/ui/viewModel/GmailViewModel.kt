@@ -7,14 +7,12 @@ import androidx.paging.cachedIn
 import com.example.breify20.model.email.Category
 import com.example.breify20.model.email.EmailItem
 import com.example.breify20.repository.GmailRepository
-import com.example.breify20.ui.screens.EmailPriority
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.launch
-import okhttp3.Dispatcher
 
 class GmailViewModel(
     private val repository: GmailRepository
@@ -23,10 +21,8 @@ class GmailViewModel(
     override val isSearching = MutableStateFlow(false)
     private val _searchResults = MutableStateFlow<List<EmailItem>>(emptyList())
     override val searchResults = _searchResults.asStateFlow()
-
     override val selectedCategory = MutableStateFlow<Category?>(null)
-    override val emails =
-        selectedCategory
+    override val emails = selectedCategory
             .flatMapLatest { category ->
                 if (category == null) {
                     repository.getPagedEmails()
@@ -54,7 +50,6 @@ class GmailViewModel(
     override fun showSelectedCategory(category  : String){
         selectedCategory.value = Category.valueOf(category)
     }
-
     override fun search(query: String , category : String?) {
         viewModelScope.launch {
             Log.d("SEARCH_DEBUG", "query=$query category=$category")
@@ -71,5 +66,10 @@ class GmailViewModel(
     }
     override fun clearSearchResults() {
         _searchResults.value = emptyList()
+    }
+    override fun markAsRead(emailId:String){
+        viewModelScope.launch {
+            repository.markAsRead(emailId)
+        }
     }
 }

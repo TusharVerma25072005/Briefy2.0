@@ -9,11 +9,9 @@ class GmailViewModelFactory(
 ) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-
         if (modelClass.isAssignableFrom(GmailViewModel::class.java)) {
             return GmailViewModel(repository) as T
         }
-
         throw IllegalArgumentException("Unknown ViewModel")
 
     }

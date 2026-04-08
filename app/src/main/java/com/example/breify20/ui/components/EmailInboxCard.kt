@@ -1,7 +1,6 @@
 package com.example.breify20.ui.components
 
 import PriorityIndicator
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -22,15 +21,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.example.breify20.model.email.EmailItem
-import com.example.breify20.ui.screens.sample
 
 @Composable
 fun EmailCard(email: EmailItem , navController : NavController) {
+
     Card(
         modifier = Modifier
             .padding(horizontal = 2.dp, vertical = 0.dp)
@@ -68,7 +65,7 @@ fun EmailCard(email: EmailItem , navController : NavController) {
                     ) {
                         Text(
                             text = email.subject,
-                            fontWeight = if (email.isRead) FontWeight.Medium else FontWeight.Bold,
+                            fontWeight = if (email.isRead == true) FontWeight.Normal else FontWeight.ExtraBold,
                             style = MaterialTheme.typography.bodyLarge,
                             maxLines = 1
                         )
@@ -112,11 +109,4 @@ fun EmailCard(email: EmailItem , navController : NavController) {
             thickness = 1.dp
         )
     }
-}
-
-@Composable
-@Preview(showBackground = true)
-fun EmailCardPreview(){
-    var navController = rememberNavController()
-    EmailCard(email = sample , navController = navController)
 }

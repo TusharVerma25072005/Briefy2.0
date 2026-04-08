@@ -1,4 +1,3 @@
-import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
@@ -36,7 +35,6 @@ import com.example.breify20.ui.components.CategorySelectBox
 import com.example.breify20.ui.components.EmailCard
 import com.example.breify20.ui.components.EmptyState
 import com.example.breify20.ui.viewModel.EmailViewModel
-import kotlinx.coroutines.delay
 
 @Composable
 fun CategoryScreen(
@@ -56,11 +54,9 @@ fun CategoryScreen(
     var showBars by remember { mutableStateOf(true) }
     var selectedCategory by remember { mutableStateOf(Category.WORK) }
     var searchQuery by remember { mutableStateOf("") }
-
     val searchResults by viewModel?.searchResults?.collectAsState()
         ?: remember { mutableStateOf(emptyList()) }
 
-    // 🔥 ALL EMAILS (from paging)
     val allEmails = emails?.itemSnapshotList?.items ?: emptyList()
 
     val baseList = if (searchQuery.isBlank()) {
